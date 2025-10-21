@@ -1,0 +1,181 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ========================================
+    // Helper Functions
+    // ========================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function isCoach() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach';
+    }
+
+    function isPlayer() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'player';
+    }
+
+    function belongsToProgram(programId) {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.programId == programId;
+    }
+
+    // ========================================
+    // Users Collection
+    // ========================================
+    match /users/{userId} {
+      // Allow users to read their own profile, coaches can read all profiles
+      allow read: if isOwner(userId) || isCoach();
+
+      // Allow users to create their own profile on signup
+      allow create: if isOwner(userId) &&
+                      request.resource.data.keys().hasAll(['email', 'displayName', 'role', 'programId']);
+
+      // Users can update their own profile (but not change role or programId)
+      allow update: if isOwner(userId) &&
+                      request.resource.data.role == resource.data.role &&
+                      request.resource.data.programId == resource.data.programId;
+
+      // Only admins can delete user profiles (handled server-side)
+      allow delete: if false;
+    }
+
+    // ========================================
+    // Players Collection
+    // ========================================
+    match /players/{playerId} {
+      // Players can read their own profile, coaches can read all players in their program
+      allow read: if isOwner(playerId) ||
+                     (isCoach() && belongsToProgram(resource.data.programId));
+
+      // Coaches can create player profiles
+      allow create: if isCoach() &&
+                      request.resource.data.programId == 'willard-tigers' &&
+                      request.resource.data.keys().hasAll(['uid', 'name', 'email', 'programId', 'isActive']);
+
+      // Players can update their own profile (limited fields)
+      // Coaches can update any player in their program
+      allow update: if (isOwner(playerId) &&
+                         (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'programId', 'averageScore', 'highGame', 'gamesPlayed']))) ||
+                       (isCoach() && belongsToProgram(resource.data.programId));
+
+      // Only coaches can delete/deactivate players
+      allow delete: if isCoach() && belongsToProgram(resource.data.programId);
+    }
+
+    // ========================================
+    // Teams Collection
+    // ========================================
+    match /teams/{teamId} {
+      // Anyone authenticated in the program can read teams
+      allow read: if isAuthenticated() && belongsToProgram(resource.data.programId);
+
+      // Only coaches can create/update/delete teams
+      allow create, update, delete: if isCoach();
+    }
+
+    // ========================================
+    // Public Content (Announcements, News, etc.)
+    // ========================================
+    match /publicContent/{contentId} {
+      // Anyone can read published content
+      allow read: if resource.data.isPublished == true || isCoach();
+
+      // Only coaches can create/update/delete content
+      allow create, update, delete: if isCoach();
+    }
+
+    // ========================================
+    // Schedule/Events Collection
+    // ========================================
+    match /schedules/{scheduleId} {
+      // Anyone can read schedule events
+      allow read: if true;
+
+      // Only coaches can create/update/delete events
+      allow create, update, delete: if isCoach();
+    }
+
+    // ========================================
+    // Achievements Collection
+    // ========================================
+    match /achievements/{achievementId} {
+      // Public achievements can be read by anyone, private only by owner or coach
+      allow read: if resource.data.isPublic == true ||
+                     isOwner(resource.data.playerId) ||
+                     isCoach();
+
+      // Only coaches can create/update/delete achievements
+      allow create, update, delete: if isCoach();
+    }
+
+    // ========================================
+    // Photo Gallery Collection
+    // ========================================
+    match /photoGallery/{photoId} {
+      // Public photos can be read by anyone, private only by coach
+      allow read: if resource.data.isPublic == true || isCoach();
+
+      // Only coaches can upload/manage photos
+      allow create, update, delete: if isCoach();
+    }
+
+    // ========================================
+    // Contact Submissions Collection
+    // ========================================
+    match /contactSubmissions/{submissionId} {
+      // Anyone can create a contact submission
+      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'subject', 'message', 'type', 'status']) &&
+                      request.resource.data.status == 'new';
+
+      // Only coaches can read/update/delete submissions
+      allow read, update, delete: if isCoach();
+    }
+
+    // ========================================
+    // Stats App Integration Collections
+    // (Shared with Stats app - read-only from website)
+    // ========================================
+
+    match /games/{gameId} {
+      // Players can read their own games, coaches can read all
+      allow read: if isOwner(resource.data.playerId) || isCoach();
+      // Write operations handled by Stats app
+      allow write: if false;
+    }
+
+    match /sessions/{sessionId} {
+      // Players in the session can read, coaches can read all
+      allow read: if isAuthenticated() &&
+                     (request.auth.uid in resource.data.playerIds || isCoach());
+      // Write operations handled by Stats app
+      allow write: if false;
+    }
+
+    match /frames/{frameId} {
+      // Anyone authenticated can read frames (for stats display)
+      allow read: if isAuthenticated();
+      // Write operations handled by Stats app
+      allow write: if false;
+    }
+
+    // ========================================
+    // Deny all other reads/writes
+    // ========================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/daves/GCP-INFRA-BASE/gcp-mvps/**)",
+      "Bash(dir:*)",
+      "Read(//c/Users/daves/.claude/**)",
+      "Bash(firebase --version:*)",
+      "Bash(npm run build:*)",
+      "Bash(tee:*)",
+      "Bash(firebase login:list:*)",
+      "Bash(firebase init:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(firebase projects:list:*)",
+      "Bash(node scripts/setup-coach.js:*)",
+      "Bash(cat:*)",
+      "Bash(firebase use:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

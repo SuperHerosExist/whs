@@ -1,0 +1,88 @@
+{
+  "project": {
+    "name": "whs-bowling-site",
+    "description": "Willard High School Tigers Bowling Team - Official Website",
+    "organization": "Willard High School",
+    "environment": "production"
+  },
+  "gcp": {
+    "projectId": "${VITE_GCP_PROJECT_ID}",
+    "region": "us-central1",
+    "services": {
+      "firebase": {
+        "hosting": true,
+        "authentication": true,
+        "firestore": true,
+        "storage": true,
+        "functions": false
+      },
+      "cloudStorage": {
+        "enabled": true,
+        "buckets": [
+          {
+            "name": "player-profiles",
+            "location": "us-central1",
+            "storageClass": "STANDARD",
+            "publicAccess": false,
+            "maxFileSizeMB": 5
+          },
+          {
+            "name": "team-photos",
+            "location": "us-central1",
+            "storageClass": "STANDARD",
+            "publicAccess": true,
+            "maxFileSizeMB": 10
+          }
+        ]
+      },
+      "firestore": {
+        "enabled": true,
+        "location": "us-central1",
+        "collections": [
+          "users",
+          "players",
+          "teams",
+          "publicContent",
+          "schedules",
+          "achievements",
+          "photoGallery"
+        ]
+      }
+    }
+  },
+  "security": {
+    "authentication": {
+      "providers": ["email", "google"],
+      "sessionExpiration": "30d",
+      "mfa": false
+    },
+    "authorization": {
+      "roles": ["public", "player", "coach"],
+      "rbacEnabled": true
+    },
+    "dataProtection": {
+      "encryptionAtRest": true,
+      "encryptionInTransit": true,
+      "backupEnabled": true,
+      "retentionDays": 90
+    }
+  },
+  "integrations": {
+    "statsApp": {
+      "enabled": true,
+      "repository": "https://github.com/SuperHerosExist/Stats.git",
+      "sharedData": ["players", "teams", "games", "sessions"],
+      "authIntegration": true
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics": ["performance", "errors", "usage"],
+    "alerting": false
+  },
+  "compliance": {
+    "ferpa": true,
+    "coppa": true,
+    "dataRetention": "school-year-plus-1"
+  }
+}

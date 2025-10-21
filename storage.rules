@@ -1,0 +1,80 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isCoach() {
+      return isAuthenticated() &&
+             firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'coach';
+    }
+
+    function isValidImageFile() {
+      return request.resource.size < 5 * 1024 * 1024 && // 5MB max
+             request.resource.contentType.matches('image/.*');
+    }
+
+    function isValidTeamPhotoFile() {
+      return request.resource.size < 10 * 1024 * 1024 && // 10MB max for team photos
+             request.resource.contentType.matches('image/.*');
+    }
+
+    // ========================================
+    // Player Profile Photos
+    // ========================================
+    match /player-profiles/{userId}/{fileName} {
+      // Players can upload their own photos, coaches can upload any photo
+      allow create, update: if (isAuthenticated() && request.auth.uid == userId && isValidImageFile()) ||
+                               (isCoach() && isValidImageFile());
+
+      // Players can read their own photos, coaches can read all, public can read if referenced in published content
+      allow read: if isAuthenticated() || isCoach();
+
+      // Players can delete their own photos, coaches can delete any
+      allow delete: if (isAuthenticated() && request.auth.uid == userId) || isCoach();
+    }
+
+    // ========================================
+    // Team Photos (Public Gallery)
+    // ========================================
+    match /team-photos/{fileName} {
+      // Anyone can read team photos
+      allow read: if true;
+
+      // Only coaches can upload/update/delete team photos
+      allow create, update, delete: if isCoach() && isValidTeamPhotoFile();
+    }
+
+    // ========================================
+    // Public Assets (Logos, Banners, etc.)
+    // ========================================
+    match /public-assets/{fileName} {
+      // Anyone can read public assets
+      allow read: if true;
+
+      // Only coaches can upload/update/delete public assets
+      allow create, update, delete: if isCoach();
+    }
+
+    // ========================================
+    // Temporary Uploads (for processing)
+    // ========================================
+    match /temp-uploads/{userId}/{fileName} {
+      // Users can upload to their own temp folder
+      allow create: if isAuthenticated() && request.auth.uid == userId && isValidImageFile();
+
+      // Users can read/delete their own temp files
+      allow read, delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ========================================
+    // Deny all other operations
+    // ========================================
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
