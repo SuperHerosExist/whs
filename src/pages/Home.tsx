@@ -3,27 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { Trophy, Users, Target, TrendingUp, ChevronRight, Calendar, Star, Pin, Zap, Award } from 'lucide-react';
 import { Button, StatCard } from '@/components/ui';
 import { useTeamStats } from '@/hooks/useTeamStats';
+import { useRecentHighlights } from '@/hooks/useRecentHighlights';
+
+const iconMap = {
+  Trophy,
+  Star,
+  Award,
+  Target
+};
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
   const teamStats = useTeamStats();
-
-  const highlights = [
-    {
-      icon: Trophy,
-      title: 'District Champions',
-      description: 'Team posted a season-high 4,012 total pins to claim the district title',
-      date: '2 days ago',
-      color: 'from-tiger-tiger-gold to-yellow-500'
-    },
-    {
-      icon: Star,
-      title: 'Near Perfect Game',
-      description: 'Alex Johnson bowled a 289 at Regional Tournament, missing perfection by just 11 pins',
-      date: '1 week ago',
-      color: 'from-purple-600 to-purple-700'
-    }
-  ];
+  const { highlights, loading: highlightsLoading } = useRecentHighlights(4);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 via-white to-tiger-neutral-100">
@@ -161,37 +153,57 @@ export const Home: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-          {highlights.map((highlight, idx) => (
-            <div
-              key={idx}
-              className="relative group bg-white rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all p-6 md:p-8 cursor-pointer border-2 border-transparent hover:border-tiger-tiger-gold overflow-hidden"
-            >
-              {/* Background gradient on hover */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${highlight.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
-
-              <div className="relative flex items-start gap-4">
-                <div className={`flex-shrink-0 p-4 md:p-5 rounded-2xl bg-gradient-to-br ${highlight.color} group-hover:scale-110 transition-transform shadow-lg`}>
-                  <highlight.icon className="w-7 h-7 md:w-9 md:h-9 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-tiger-primary-black mb-3 group-hover:text-tiger-tiger-darkRed transition-colors">
-                    {highlight.title}
-                  </h3>
-                  <p className="text-sm md:text-base lg:text-lg text-tiger-neutral-700 leading-relaxed mb-3">
-                    {highlight.description}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-tiger-tiger-gold rounded-full" />
-                    <p className="text-xs md:text-sm text-tiger-neutral-500 font-semibold">
-                      {highlight.date}
-                    </p>
+        {highlightsLoading ? (
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+            {[1, 2].map(i => (
+              <div key={i} className="bg-white rounded-2xl shadow-xl p-6 md:p-8 animate-pulse">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 bg-tiger-neutral-200 rounded-2xl" />
+                  <div className="flex-1 space-y-3">
+                    <div className="h-6 bg-tiger-neutral-200 rounded w-3/4" />
+                    <div className="h-4 bg-tiger-neutral-100 rounded w-full" />
+                    <div className="h-4 bg-tiger-neutral-100 rounded w-2/3" />
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+            {highlights.map((highlight) => {
+              const IconComponent = iconMap[highlight.icon];
+              return (
+                <div
+                  key={highlight.id}
+                  className="relative group bg-white rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all p-6 md:p-8 cursor-pointer border-2 border-transparent hover:border-tiger-tiger-gold overflow-hidden"
+                >
+                  {/* Background gradient on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${highlight.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
+
+                  <div className="relative flex items-start gap-4">
+                    <div className={`flex-shrink-0 p-4 md:p-5 rounded-2xl bg-gradient-to-br ${highlight.color} group-hover:scale-110 transition-transform shadow-lg`}>
+                      <IconComponent className="w-7 h-7 md:w-9 md:h-9 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-tiger-primary-black mb-3 group-hover:text-tiger-tiger-darkRed transition-colors">
+                        {highlight.title}
+                      </h3>
+                      <p className="text-sm md:text-base lg:text-lg text-tiger-neutral-700 leading-relaxed mb-3">
+                        {highlight.description}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-tiger-tiger-gold rounded-full" />
+                        <p className="text-xs md:text-sm text-tiger-neutral-500 font-semibold">
+                          {highlight.date}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="mt-8 md:mt-10 flex justify-center">
           <Button
@@ -265,36 +277,71 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Call to Action - More Dynamic */}
+      {/* JOIN THE TEAM - Super Prominent CTA */}
       <section className="max-w-7xl mx-auto px-4 pb-16 md:pb-20">
-        <div className="relative bg-gradient-to-r from-tiger-tiger-darkRed via-red-600 to-tiger-tiger-darkRed rounded-3xl md:rounded-[2rem] p-10 md:p-14 lg:p-20 text-center text-white shadow-2xl overflow-hidden">
+        <div className="relative bg-gradient-to-r from-tiger-tiger-darkRed via-red-600 to-tiger-tiger-darkRed rounded-3xl md:rounded-[2rem] p-12 md:p-16 lg:p-24 text-center text-white shadow-2xl overflow-hidden border-4 border-tiger-tiger-gold">
           {/* Animated elements */}
           <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-2xl animate-pulse" />
-            <div className="absolute bottom-10 right-10 w-56 h-56 bg-tiger-tiger-gold rounded-full blur-2xl animate-pulse delay-500" />
+            <div className="absolute top-10 left-10 w-48 h-48 md:w-64 md:h-64 bg-white rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-10 right-10 w-64 h-64 md:w-96 md:h-96 bg-tiger-tiger-gold rounded-full blur-3xl animate-pulse delay-500" />
           </div>
 
           <div className="relative z-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white rounded-full mb-6 md:mb-8 shadow-2xl">
-              <Pin className="w-9 h-9 md:w-11 md:h-11 text-tiger-tiger-darkRed" />
+            <div className="inline-flex items-center justify-center w-20 h-20 md:w-28 md:h-28 bg-white rounded-full mb-8 md:mb-10 shadow-2xl animate-bounce">
+              <Pin className="w-11 h-11 md:w-16 md:h-16 text-tiger-tiger-darkRed" />
             </div>
-            <h3 className="text-3xl md:text-5xl lg:text-6xl font-black mb-4 md:mb-6">
-              Ready to Roll?
+
+            <div className="mb-6 md:mb-8">
+              <div className="inline-block px-6 py-2 bg-tiger-tiger-gold text-tiger-primary-black rounded-full font-black text-sm md:text-base mb-4 md:mb-6 shadow-xl">
+                🎳 NEW MEMBERS WELCOME
+              </div>
+            </div>
+
+            <h3 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 md:mb-8 leading-tight">
+              Ready to Join<br />
+              <span className="bg-gradient-to-r from-white to-tiger-tiger-gold bg-clip-text text-transparent">
+                The Tigers?
+              </span>
             </h3>
-            <p className="text-lg md:text-2xl lg:text-3xl mb-8 md:mb-10 opacity-95 max-w-3xl mx-auto font-semibold leading-relaxed">
-              Practice starts every Monday & Wednesday at 3:30 PM.
-              New members are always welcome!
+
+            <p className="text-xl md:text-3xl lg:text-4xl mb-4 md:mb-6 opacity-95 max-w-4xl mx-auto font-bold leading-relaxed">
+              Practice starts every Monday & Wednesday at 3:30 PM
             </p>
-            <Button
-              variant="primary"
-              size="xl"
-              icon={ChevronRight}
-              iconPosition="right"
-              onClick={() => navigate('/contact')}
-              className="bg-white text-tiger-tiger-darkRed hover:bg-tiger-neutral-100 text-lg md:text-xl font-black shadow-2xl transform hover:scale-105 transition-all"
-            >
-              Get Started Today
-            </Button>
+
+            <p className="text-lg md:text-2xl mb-10 md:mb-12 opacity-90 max-w-2xl mx-auto font-semibold">
+              All skill levels welcome • Equipment provided • No experience needed
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center max-w-2xl mx-auto">
+              <Button
+                variant="primary"
+                size="xl"
+                icon={ChevronRight}
+                iconPosition="right"
+                onClick={() => navigate('/contact')}
+                className="bg-white text-tiger-tiger-darkRed hover:bg-tiger-neutral-100 text-xl md:text-2xl font-black shadow-2xl transform hover:scale-110 transition-all py-6 md:py-8 px-8 md:px-12"
+              >
+                Join the Team
+              </Button>
+              <Button
+                variant="outline"
+                size="xl"
+                icon={Users}
+                onClick={() => navigate('/roster')}
+                className="border-4 border-white text-white hover:bg-white hover:text-tiger-tiger-darkRed text-xl md:text-2xl font-black backdrop-blur-sm py-6 md:py-8 px-8 md:px-12"
+              >
+                Meet the Team
+              </Button>
+            </div>
+
+            <div className="mt-8 md:mt-10 pt-8 md:pt-10 border-t-2 border-white border-opacity-30">
+              <p className="text-base md:text-lg opacity-75 font-medium">
+                Questions? Contact Coach at{' '}
+                <a href="mailto:coach@willardtigers.com" className="underline hover:text-tiger-tiger-gold transition-colors font-bold">
+                  coach@willardtigers.com
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </section>
