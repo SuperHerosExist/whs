@@ -119,7 +119,25 @@ npm run preview
 
 ## Deployment
 
-### Initial Deployment
+### ✅ Automatic Deployment (GitHub Actions)
+
+**The site automatically deploys on every push!** No manual commands needed.
+
+#### How It Works:
+- Push to `main` or any `claude/bowling-app-redesign-*` branch
+- GitHub Actions automatically builds and deploys to Firebase
+- View deployment status in the **Actions** tab
+
+#### Setup (One-Time):
+Already configured! The workflow is located at `.github/workflows/firebase-deploy.yml`
+
+If setting up a new repository:
+1. Run `firebase init hosting:github` to connect Firebase to GitHub
+2. Or manually add `FIREBASE_SERVICE_ACCOUNT` secret to GitHub repository settings
+
+### Manual Deployment (Optional)
+
+If you prefer to deploy manually:
 
 1. **Build the application**:
    ```bash
@@ -142,19 +160,6 @@ npm run preview
    # Storage rules only
    npm run deploy:storage
    ```
-
-### Continuous Deployment
-
-Set up GitHub Actions for automatic deployment:
-
-1. Generate a Firebase token:
-   ```bash
-   firebase login:ci
-   ```
-
-2. Add the token to GitHub Secrets as `FIREBASE_TOKEN`
-
-3. GitHub Actions will auto-deploy on push to main branch
 
 ## Project Structure
 
