@@ -123,6 +123,14 @@ export const branding = {
     colors: ['#000000', '#D4AF37'], // Black and gold
   },
 
+  // Logos configuration
+  logos: {
+    primary: '/assets/logos/tiger-logo.jpg',
+    secondary: '/assets/logos/W-logo.png',
+    activeLogo: 'primary' as 'primary' | 'secondary', // Which logo to use by default
+    fallback: '/assets/logos/tiger-logo.jpg', // Fallback if no logo is available
+  },
+
   // Social media
   social: {
     facebook: '',

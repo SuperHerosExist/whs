@@ -219,3 +219,21 @@ export interface AuthContextType {
   signOut: () => Promise<void>;
   updateUserProfile: (updates: Partial<User>) => Promise<void>;
 }
+
+// Team Branding Configuration
+export interface TeamBranding {
+  id: string;
+  programId: string;
+  teamName: string;
+  primaryLogo: string; // URL to primary logo (e.g., tiger-logo.jpg)
+  secondaryLogo?: string; // URL to secondary logo (e.g., W-logo.png)
+  activeLogo: 'primary' | 'secondary'; // Which logo to use by default
+  teamColors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
+  customCSS?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

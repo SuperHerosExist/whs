@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { statsDb, STATS_TEAM_ID } from '@/lib/statsFirebase';
 import type { Player } from '@/types';
 import { Trophy, Target, Zap, Award, BarChart3 } from 'lucide-react';
 
@@ -17,20 +17,52 @@ export const Stats: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Fetch all active players
-        const playersRef = collection(db, 'players');
-        const playersQuery = query(
-          playersRef,
-          where('programId', '==', 'willard-tigers'),
-          where('isActive', '==', true)
-        );
-        const playersSnapshot = await getDocs(playersQuery);
-        const players = playersSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate() || new Date(),
-          updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-        })) as Player[];
+        // First, get the team document to access playerIds array
+        const teamRef = doc(statsDb, 'teams', STATS_TEAM_ID);
+        const teamSnap = await getDoc(teamRef);
+
+        if (!teamSnap.exists()) {
+          console.error('❌ Team not found');
+          setLoading(false);
+          return;
+        }
+
+        const teamData = teamSnap.data();
+        const playerIds = teamData?.playerIds || [];
+
+        // Fetch each player individually by ID
+        const players: Player[] = [];
+        for (const playerId of playerIds) {
+          try {
+            const playerRef = doc(statsDb, 'players', playerId);
+            const playerSnap = await getDoc(playerRef);
+
+            if (playerSnap.exists()) {
+              const data = playerSnap.data();
+              players.push({
+                id: playerSnap.id,
+                uid: data.uid || playerSnap.id,
+                name: data.name || 'Unknown Player',
+                email: data.email || '',
+                grade: data.grade || '',
+                graduationYear: data.graduationYear || new Date().getFullYear(),
+                averageScore: data.average || 0,
+                highGame: data.highGame || 0,
+                gamesPlayed: data.gamesPlayed || 0,
+                programId: 'willard-tigers',
+                teamIds: data.teamIds || [STATS_TEAM_ID],
+                isActive: data.isActive !== false,
+                photoURL: data.photoURL || null,
+                jerseyNumber: data.jerseyNumber || '',
+                bio: data.bio || '',
+                createdAt: data.createdAt?.toDate() || new Date(),
+                updatedAt: data.updatedAt?.toDate() || new Date(),
+              });
+            }
+          } catch (playerError) {
+            console.warn(`⚠️  Could not fetch player ${playerId}:`, playerError);
+          }
+        }
 
         // Calculate team statistics
         const activePlayers = players.length;
@@ -54,8 +86,11 @@ export const Stats: React.FC = () => {
           .sort((a, b) => b.averageScore - a.averageScore)
           .slice(0, 10);
         setTopPerformers(topPerf);
+
+        console.log(`✅ Loaded stats for ${activePlayers} players from Stats app (Team: ${STATS_TEAM_ID})`);
+        console.log(`   Team Average: ${teamAverage}, High Game: ${highGame}, Total Games: ${totalGamesPlayed}`);
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        console.error('❌ Error fetching stats from Stats app:', error);
       } finally {
         setLoading(false);
       }
@@ -77,8 +112,7 @@ export const Stats: React.FC = () => {
       {/* Page Header */}
       <section className="bg-tiger-primary-black text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-display font-black mb-4">
-            Team Statistics
+          <h1 className="font-heading text-5xl md:text-6xl tracking-wider mb-6">TEAM STATISTICS
           </h1>
           <p className="text-xl text-tiger-neutral-300">
             2024-2025 Season Performance
@@ -92,13 +126,13 @@ export const Stats: React.FC = () => {
           <StatCard
             icon={Target}
             label="Team Average"
-            value={teamStats.teamAverage.toString()}
+            value={teamStats.teamAverage > 0 ? teamStats.teamAverage.toString() : 'Pre-Season'}
             color="from-tiger-tiger-darkRed to-red-700"
           />
           <StatCard
             icon={Trophy}
             label="High Game"
-            value={teamStats.highGame.toString()}
+            value={teamStats.highGame > 0 ? teamStats.highGame.toString() : 'Pre-Season'}
             color="from-tiger-tiger-gold to-yellow-600"
           />
           <StatCard
@@ -203,9 +237,15 @@ export const Stats: React.FC = () => {
           </div>
         ) : (
           <div className="bg-white rounded-2xl shadow-tiger p-12 text-center">
-            <BarChart3 className="w-16 h-16 text-tiger-neutral-300 mx-auto mb-4" />
-            <p className="text-tiger-neutral-600 text-lg">
-              No statistics available yet. Check back after the season starts!
+            <div className="text-8xl mb-6">🎳</div>
+            <h3 className="text-2xl font-black text-tiger-primary-black mb-4">
+              Pre-Season Mode
+            </h3>
+            <p className="text-tiger-neutral-600 text-lg mb-6">
+              Our team of {teamStats.activePlayers} bowlers is ready to compete! Statistics will appear once the season begins and games are recorded.
+            </p>
+            <p className="text-sm text-tiger-neutral-500">
+              Coaches can track performance using the Stats App during practices and matches.
             </p>
           </div>
         )}

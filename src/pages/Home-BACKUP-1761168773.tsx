@@ -71,7 +71,7 @@ export const Home: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-willard-grey-50 via-willard-white to-willard-grey-100">
 
       {/* 🔥 HERO SECTION - FULL WIDTH CENTERED */}
-      <section className="relative bg-black text-white overflow-hidden">
+      <section className="relative bg-gradient-to-br from-willard-black via-willard-grey-900 to-willard-grey-800 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-20 left-10 text-7xl">🎳</div>
           <div className="absolute bottom-20 right-10 text-7xl">🎯</div>
@@ -84,7 +84,7 @@ export const Home: React.FC = () => {
           </div>
 
           {/* Title */}
-          <h1 className="font-heading text-7xl md:text-8xl lg:text-9xl tracking-wider leading-none mb-6 animate-slide-up">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-3">
             WILLARD TIGERS
           </h1>
           <div className="text-xl md:text-2xl font-bold opacity-90 mb-12">
@@ -98,8 +98,8 @@ export const Home: React.FC = () => {
           </div>
 
           {/* Subheading - WITH EXTRA SPACING */}
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-12 leading-tight max-w-4xl mx-auto animate-slide-up" style={{animationDelay: '0.3s'">
-            STRIKE YOUR WAY<br />TO VICTORY
+          <h2 className="text-3xl md:text-4xl lg:text-5xl mb-16 font-black tracking-tight">
+            Strike Your Way to Victory
           </h2>
 
           {/* Description */}

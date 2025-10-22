@@ -1,0 +1,180 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function userExists() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isCoach() {
+      return isAuthenticated() && userExists() && getUserData().role == 'coach';
+    }
+
+    function belongsToSameProgram(programId) {
+      return isAuthenticated() && userExists() && getUserData().programId == programId;
+    }
+
+    function isWillardPlayer(playerId) {
+      // Check if player belongs to Willard Tigers team
+      return get(/databases/$(database)/documents/teams/MpyIVpCIsFSyqEdPID1O).data.playerIds.hasAny([playerId]);
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isCoach();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if false;
+    }
+
+    // Players collection - UPDATED FOR WHS SITE ACCESS
+    match /players/{playerId} {
+      // Allow public read for Willard Tigers players OR authenticated access for others
+      allow read: if isWillardPlayer(playerId) ||
+                     (isAuthenticated() &&
+                      (playerId == request.auth.uid ||
+                       isCoach() ||
+                       (userExists() && belongsToSameProgram(resource.data.programId))));
+      allow create: if isAuthenticated();
+      allow update: if playerId == request.auth.uid || isCoach();
+      allow delete: if isCoach();
+    }
+
+    // WHS SITE PUBLIC ACCESS - WILLARD TIGERS ONLY
+    // Allow public read access ONLY to Willard Tigers team
+    match /teams/MpyIVpCIsFSyqEdPID1O {
+      allow read: if true;
+      allow create: if isCoach();
+      allow update: if isCoach();
+      allow delete: if isCoach();
+
+      match /players/{playerId} {
+        allow read: if true;
+        allow write: if isCoach();
+      }
+
+      match /games/{gameId} {
+        allow read: if true;
+        allow write: if isCoach();
+      }
+
+      match /sessions/{sessionId} {
+        allow read: if true;
+        allow write: if isCoach();
+      }
+    }
+
+    // Teams collection (all other teams still require auth)
+    match /teams/{teamId} {
+      allow read: if isAuthenticated();
+      allow create: if isCoach();
+      allow update: if isCoach();
+      allow delete: if isCoach();
+    }
+
+    // Sessions collection
+    match /sessions/{sessionId} {
+      allow read: if isAuthenticated() &&
+                     (request.auth.uid in resource.data.playerIds ||
+                      isCoach());
+      allow create: if isAuthenticated();
+      allow update: if isCoach() || request.auth.uid in resource.data.playerIds;
+      allow delete: if isCoach();
+    }
+
+    // Games collection
+    match /games/{gameId} {
+      allow read: if isAuthenticated() &&
+                     (resource.data.playerId == request.auth.uid || isCoach());
+      allow create: if isAuthenticated();
+      allow update: if resource.data.playerId == request.auth.uid || isCoach();
+      allow delete: if isCoach();
+    }
+
+    // Frames collection
+    match /frames/{frameId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isCoach();
+    }
+
+    // Coach Notes - private to coaches only
+    match /coachNotes/{noteId} {
+      allow read: if isCoach() &&
+                     (resource.data.coachId == request.auth.uid ||
+                      resource.data.playerId == request.auth.uid);
+      allow create: if isCoach();
+      allow update: if isCoach() && resource.data.coachId == request.auth.uid;
+      allow delete: if isCoach() && resource.data.coachId == request.auth.uid;
+    }
+
+    // AI Generated Posts - coaches can CRUD their own posts
+    match /aiPosts/{postId} {
+      allow read: if isCoach() &&
+                     (resource.data.coachId == request.auth.uid ||
+                      belongsToSameProgram(resource.data.programId));
+      allow create: if isCoach() &&
+                       request.resource.data.coachId == request.auth.uid;
+      allow update: if isCoach() && resource.data.coachId == request.auth.uid;
+      allow delete: if isCoach() && resource.data.coachId == request.auth.uid;
+    }
+
+    // AI Coach Settings - coaches can manage their own preferences
+    match /aiCoachSettings/{settingsId} {
+      allow read: if isCoach() && settingsId == request.auth.uid;
+      allow write: if isCoach() && settingsId == request.auth.uid;
+    }
+
+    // DFS Synced Bowler Profiles - read-only from sync, coaches can read
+    match /dfsBowlers/{bowlerId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // DFS Leagues - read-only from sync
+    match /dfsLeagues/{leagueId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // DFS Sync Status - admin monitoring only
+    match /dfsSyncStatus/{statusId} {
+      allow read: if isCoach();
+      allow write: if false;
+    }
+
+    // Accolade Settings - coaches can manage for their program
+    match /accoladeSettings/{programId} {
+      allow read: if isAuthenticated() && belongsToSameProgram(programId);
+      allow write: if isCoach() && belongsToSameProgram(programId);
+    }
+
+    // Dashboard Configuration - coaches can manage for their program
+    match /dashboardConfig/{programId} {
+      allow read: if isAuthenticated() && belongsToSameProgram(programId);
+      allow write: if isCoach() && belongsToSameProgram(programId);
+    }
+
+    // Team Builder Configuration - coaches can manage for their program
+    match /teamBuilderConfigs/{configId} {
+      allow read: if isAuthenticated() && belongsToSameProgram(resource.data.programId);
+      allow create: if isCoach();
+      allow update: if isCoach() && belongsToSameProgram(resource.data.programId);
+      allow delete: if isCoach() && belongsToSameProgram(resource.data.programId);
+    }
+  }
+}

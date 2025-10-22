@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { statsDb, STATS_TEAM_ID } from '@/lib/statsFirebase';
 import type { Player } from '@/types';
 import { Users, ChevronRight } from 'lucide-react';
+import { WillardLogo } from '@/components/WillardLogo';
 
 export const Roster: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -12,25 +13,60 @@ export const Roster: React.FC = () => {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const playersRef = collection(db, 'players');
-        const q = query(
-          playersRef,
-          where('programId', '==', 'willard-tigers'),
-          where('isActive', '==', true),
-          orderBy('averageScore', 'desc')
-        );
+        // First, get the team document to access playerIds array
+        const teamRef = doc(statsDb, 'teams', STATS_TEAM_ID);
+        const teamSnap = await getDoc(teamRef);
 
-        const snapshot = await getDocs(q);
-        const playersData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate() || new Date(),
-          updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-        })) as Player[];
+        if (!teamSnap.exists()) {
+          console.error('❌ Team not found');
+          setLoading(false);
+          return;
+        }
+
+        const teamData = teamSnap.data();
+        const playerIds = teamData?.playerIds || [];
+
+        // Fetch each player individually by ID
+        const playersData: Player[] = [];
+        for (const playerId of playerIds) {
+          try {
+            const playerRef = doc(statsDb, 'players', playerId);
+            const playerSnap = await getDoc(playerRef);
+
+            if (playerSnap.exists()) {
+              const data = playerSnap.data();
+              playersData.push({
+                id: playerSnap.id,
+                uid: data.uid || playerSnap.id,
+                name: data.name || 'Unknown Player',
+                email: data.email || '',
+                grade: data.grade || '',
+                graduationYear: data.graduationYear || new Date().getFullYear(),
+                averageScore: data.average || 0,
+                highGame: data.highGame || 0,
+                gamesPlayed: data.gamesPlayed || 0,
+                programId: 'willard-tigers',
+                teamIds: data.teamIds || [STATS_TEAM_ID],
+                isActive: data.isActive !== false,
+                photoURL: data.photoURL || null,
+                jerseyNumber: data.jerseyNumber || '',
+                bio: data.bio || '',
+                createdAt: data.createdAt?.toDate() || new Date(),
+                updatedAt: data.updatedAt?.toDate() || new Date(),
+              });
+            }
+          } catch (playerError) {
+            console.warn(`⚠️  Could not fetch player ${playerId}:`, playerError);
+          }
+        }
+
+        // Sort by average score descending
+        playersData.sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
 
         setPlayers(playersData);
+        console.log(`✅ Loaded ${playersData.length} players from Stats app (Team: ${STATS_TEAM_ID})`);
       } catch (error) {
-        console.error('Error fetching players:', error);
+        console.error('❌ Error fetching players from Stats app:', error);
       } finally {
         setLoading(false);
       }
@@ -57,8 +93,7 @@ export const Roster: React.FC = () => {
               <Users className="w-16 h-16" />
             </div>
             <div>
-              <h1 className="text-6xl md:text-7xl font-black">
-                TEAM ROSTER
+              <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-wider mb-8">TEAM ROSTER
               </h1>
               <p className="text-2xl md:text-3xl text-willard-grey-300 mt-2 font-bold">
                 Meet our amazing bowlers 🎳
@@ -83,18 +118,16 @@ export const Roster: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-6 mb-6">
-                {/* Player Photo/Emoji */}
-                <div className="text-8xl group-hover:scale-125 transition-transform">
+                {/* Player Photo or Willard Logo */}
+                <div className="group-hover:scale-110 transition-transform">
                   {player.photoURL ? (
                     <img
                       src={player.photoURL}
                       alt={player.name}
-                      className="w-20 h-20 rounded-full object-cover"
+                      className="w-20 h-20 rounded-full object-cover shadow-tiger-lg"
                     />
                   ) : (
-                    <div className="w-20 h-20 bg-gradient-to-br from-willard-grey-800 to-willard-black rounded-full flex items-center justify-center text-4xl">
-                      🎯
-                    </div>
+                    <WillardLogo size={80} className="shadow-tiger-lg" />
                   )}
                 </div>
 
@@ -116,7 +149,9 @@ export const Roster: React.FC = () => {
                       Average
                     </span>
                     <span className="font-black text-willard-black text-3xl">
-                      {player.averageScore || 0}
+                      {player.averageScore > 0 ? player.averageScore : (
+                        <span className="text-lg text-willard-grey-400">Pre-Season</span>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -127,7 +162,9 @@ export const Roster: React.FC = () => {
                       High Game
                     </span>
                     <span className="font-black text-willard-grey-800 text-3xl">
-                      {player.highGame || 0}
+                      {player.highGame > 0 ? player.highGame : (
+                        <span className="text-lg text-willard-grey-400">Pre-Season</span>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -170,15 +207,15 @@ export const Roster: React.FC = () => {
           >
             {/* Player Info */}
             <div className="text-center mb-8">
-              <div className="text-9xl mb-6">
+              <div className="mb-6 flex justify-center">
                 {selectedPlayer.photoURL ? (
                   <img
                     src={selectedPlayer.photoURL}
                     alt={selectedPlayer.name}
-                    className="w-32 h-32 rounded-full object-cover mx-auto shadow-tiger-xl"
+                    className="w-32 h-32 rounded-full object-cover shadow-tiger-xl"
                   />
                 ) : (
-                  '🎯'
+                  <WillardLogo size={128} className="shadow-tiger-xl" />
                 )}
               </div>
               <h3 className="text-5xl font-black text-willard-black mb-4">
@@ -196,7 +233,9 @@ export const Roster: React.FC = () => {
                   🎯 Bowling Average
                 </div>
                 <div className="text-6xl font-black">
-                  {selectedPlayer.averageScore || 0}
+                  {selectedPlayer.averageScore > 0 ? selectedPlayer.averageScore : (
+                    <span className="text-3xl opacity-60">Pre-Season</span>
+                  )}
                 </div>
               </div>
 
@@ -205,7 +244,9 @@ export const Roster: React.FC = () => {
                   🔥 High Game
                 </div>
                 <div className="text-6xl font-black">
-                  {selectedPlayer.highGame || 0}
+                  {selectedPlayer.highGame > 0 ? selectedPlayer.highGame : (
+                    <span className="text-3xl opacity-60">Pre-Season</span>
+                  )}
                 </div>
               </div>
 
@@ -215,16 +256,18 @@ export const Roster: React.FC = () => {
                     Games
                   </div>
                   <div className="text-4xl font-black">
-                    {selectedPlayer.gamesPlayed || 0}
+                    {selectedPlayer.gamesPlayed > 0 ? selectedPlayer.gamesPlayed : (
+                      <span className="text-2xl opacity-60">0</span>
+                    )}
                   </div>
                 </div>
 
                 <div className="bg-gradient-to-br from-willard-grey-600 to-willard-grey-700 text-white rounded-3xl p-6 shadow-tiger-lg">
                   <div className="text-xs font-bold mb-1 opacity-90 uppercase tracking-wide">
-                    Year
+                    Grade
                   </div>
                   <div className="text-4xl font-black">
-                    {selectedPlayer.grade}th
+                    {selectedPlayer.grade ? `${selectedPlayer.grade}` : 'N/A'}
                   </div>
                 </div>
               </div>

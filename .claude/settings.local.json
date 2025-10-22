@@ -15,7 +15,17 @@
       "Bash(cat:*)",
       "Bash(firebase use:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git log:*)",
+      "Bash(git push:*)",
+      "Bash(node scripts/seed-bowlers.js:*)",
+      "Bash(node scripts/seed-bowlers.cjs:*)",
+      "Bash(npm install:*)",
+      "Bash(echo:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git restore:*)",
+      "Bash(node -e:*)"
     ],
     "deny": [],
     "ask": []

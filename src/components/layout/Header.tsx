@@ -21,16 +21,14 @@ export const Header: React.FC = () => {
     <nav className="bg-white shadow-tiger-xl sticky top-0 z-40 border-b-4 border-willard-black">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* 🎳 BOLD LOGO */}
-          <Link to="/" className="flex items-center gap-4 group">
-            <div className="text-6xl animate-pulse group-hover:scale-125 transition-transform">
-              🎳
-            </div>
+          {/* Logo with W and Tiger */}
+          <Link to="/" className="flex items-center gap-3 group">
+            <img src="/assets/logos/W-logo.png" alt="Willard W" className="h-12 group-hover:scale-110 transition-transform" />
             <div>
-              <div className="text-3xl font-black bg-gradient-to-r from-willard-black to-willard-grey-700 bg-clip-text text-transparent">
+              <div className="text-xl font-black text-willard-black">
                 WILLARD TIGERS
               </div>
-              <div className="text-sm font-bold text-willard-grey-600 tracking-wide">
+              <div className="text-xs font-semibold text-willard-grey-600 uppercase tracking-wide">
                 BOWLING TEAM
               </div>
             </div>
@@ -44,13 +42,13 @@ export const Header: React.FC = () => {
                 <Link
                   key={tab.id}
                   to={tab.href}
-                  className={`px-6 py-3 rounded-2xl font-black transition-all flex items-center gap-2 ${
+                  className={`px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 ${
                     active
-                      ? 'bg-gradient-to-r from-willard-black to-willard-grey-800 text-white shadow-tiger-lg scale-110'
-                      : 'text-willard-grey-600 hover:bg-willard-grey-100 hover:text-willard-black hover:scale-105'
+                      ? 'bg-gradient-to-r from-willard-black to-willard-grey-800 text-white shadow-md'
+                      : 'text-willard-grey-700 hover:bg-willard-grey-100 hover:text-willard-black'
                   }`}
                 >
-                  <tab.icon className="w-5 h-5" />
+                  <tab.icon className="w-4 h-4" />
                   <span className="hidden lg:inline">{tab.label}</span>
                 </Link>
               );
@@ -61,9 +59,9 @@ export const Header: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="px-6 py-3 bg-willard-grey-800 text-white rounded-2xl font-black hover:bg-willard-black transition-all hover:scale-105 flex items-center gap-2"
+                  className="px-4 py-2 bg-willard-grey-800 text-white rounded-lg font-bold text-sm hover:bg-willard-black transition-all flex items-center gap-2"
                 >
-                  <User className="w-5 h-5" />
+                  <User className="w-4 h-4" />
                   <span className="hidden lg:inline">{currentUser.displayName || 'Menu'}</span>
                 </button>
 
@@ -92,7 +90,7 @@ export const Header: React.FC = () => {
             ) : (
               <Link
                 to="/signin"
-                className="px-6 py-3 bg-willard-black text-white rounded-2xl font-black hover:bg-willard-grey-800 transition-all hover:scale-105 shadow-tiger-lg"
+                className="px-4 py-2 bg-willard-black text-white rounded-lg font-bold text-sm hover:bg-willard-grey-800 transition-all shadow-md"
               >
                 Sign In
               </Link>

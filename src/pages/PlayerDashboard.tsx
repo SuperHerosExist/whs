@@ -335,27 +335,27 @@ export const PlayerDashboard: React.FC = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="grade" className="block text-sm font-bold text-tiger-neutral-700 mb-2">
-                      Current Grade *
+                      Current Grade
                     </label>
                     <select
                       id="grade"
                       name="grade"
                       value={profileData.grade}
                       onChange={handleChange}
-                      required
                       className="w-full px-4 py-3 border border-tiger-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tiger-primary-black focus:border-transparent transition"
                     >
-                      <option value="">Select grade</option>
+                      <option value="">Select grade (optional for coaches)</option>
                       <option value="9">9th Grade</option>
                       <option value="10">10th Grade</option>
                       <option value="11">11th Grade</option>
                       <option value="12">12th Grade</option>
+                      <option value="coach">Coach/Staff</option>
                     </select>
                   </div>
 
                   <div>
                     <label htmlFor="graduationYear" className="block text-sm font-bold text-tiger-neutral-700 mb-2">
-                      Graduation Year *
+                      Graduation Year
                     </label>
                     <input
                       type="number"
@@ -363,10 +363,10 @@ export const PlayerDashboard: React.FC = () => {
                       name="graduationYear"
                       value={profileData.graduationYear}
                       onChange={handleChange}
-                      required
                       min={new Date().getFullYear()}
-                      max={new Date().getFullYear() + 4}
+                      max={new Date().getFullYear() + 10}
                       className="w-full px-4 py-3 border border-tiger-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tiger-primary-black focus:border-transparent transition"
+                      placeholder="Optional"
                     />
                   </div>
                 </div>

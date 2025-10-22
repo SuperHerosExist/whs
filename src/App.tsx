@@ -15,10 +15,12 @@ import { Roster } from '@/pages/Roster';
 import { Schedule } from '@/pages/Schedule';
 import { Stats } from '@/pages/Stats';
 import { Contact } from '@/pages/Contact';
+import { Debug } from '@/pages/Debug';
 
 // Protected pages
 import { PlayerDashboard } from '@/pages/PlayerDashboard';
 import { CoachDashboard } from '@/pages/CoachDashboard';
+import { CoachSettings } from '@/pages/CoachSettings';
 
 function App() {
   return (
@@ -35,6 +37,7 @@ function App() {
               <Route path="/schedule" element={<Schedule />} />
               <Route path="/stats" element={<Stats />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/debug" element={<Debug />} />
 
               {/* Auth routes */}
               <Route path="/signin" element={<SignIn />} />
@@ -56,6 +59,14 @@ function App() {
                 element={
                   <ProtectedRoute requiredRole="coach">
                     <CoachDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/coach/settings"
+                element={
+                  <ProtectedRoute requiredRole="coach">
+                    <CoachSettings />
                   </ProtectedRoute>
                 }
               />
