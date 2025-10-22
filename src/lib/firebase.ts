@@ -3,13 +3,16 @@ import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth'
 import { getFirestore, enableIndexedDbPersistence, enableNetwork } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
+// Firebase configuration for willard-tigers-bowling project
+// Note: These values are public and safe to commit to git
+// Security is enforced through Firestore rules, not by hiding config
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: "AIzaSyA_pNTE0M0zt8Y9fR3c8kYkK5UaAa5Hu9w",
+  authDomain: "willard-tigers-bowling.firebaseapp.com",
+  projectId: "willard-tigers-bowling",
+  storageBucket: "willard-tigers-bowling.firebasestorage.app",
+  messagingSenderId: "1008005824516",
+  appId: "1:1008005824516:web:1aa0fc78e8e4ef8ae55ef9"
 };
 
 // Initialize Firebase
