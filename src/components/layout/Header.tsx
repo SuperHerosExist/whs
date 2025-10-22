@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Pin, Users, Trophy, Mail, User, LogOut, Menu, X, BarChart3 } from 'lucide-react';
+import { Pin, Users, Trophy, Mail, User, LogOut, Menu, X, BarChart3, Home } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui';
 
@@ -11,10 +11,10 @@ export const Header: React.FC = () => {
   const location = useLocation();
 
   const publicNav = [
-    { id: 'home', label: 'Home', href: '/', icon: Pin },
+    { id: 'home', label: 'Home', href: '/', icon: Home },
     { id: 'roster', label: 'Roster', href: '/roster', icon: Users },
     { id: 'stats', label: 'Stats', href: '/stats', icon: Trophy },
-    { id: 'contact', label: 'Join Team', href: '/contact', icon: Mail },
+    { id: 'contact', label: 'Join', href: '/contact', icon: Mail },
   ];
 
   const isActive = (href: string) => location.pathname === href;
@@ -27,20 +27,18 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      <nav className="bg-white shadow-tiger-lg sticky top-0 z-40 border-b-2 border-tiger-primary-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-20">
+      <nav className="bg-white shadow-lg sticky top-0 z-40 border-b border-tiger-neutral-200">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between h-14 lg:h-20">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
-              <div className="text-4xl group-hover:scale-110 transition-transform">
-                <Pin className="w-10 h-10 text-tiger-primary-black" />
-              </div>
-              <div className="hidden sm:block">
-                <div className="text-xl font-black bg-gradient-to-r from-tiger-primary-black to-tiger-neutral-700 bg-clip-text text-transparent leading-tight">
+            <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
+              <Pin className="w-7 h-7 lg:w-10 lg:h-10 text-tiger-primary-black group-hover:scale-110 transition-transform" />
+              <div>
+                <div className="text-sm lg:text-xl font-black text-tiger-primary-black leading-tight">
                   WILLARD TIGERS
                 </div>
-                <div className="text-xs font-bold text-tiger-neutral-600 tracking-wide">
-                  BOWLING TEAM
+                <div className="text-[9px] lg:text-xs font-bold text-tiger-neutral-600 tracking-wide leading-tight">
+                  BOWLING
                 </div>
               </div>
             </Link>
@@ -111,24 +109,24 @@ export const Header: React.FC = () => {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - Larger touch target */}
             <div className="lg:hidden flex items-center gap-2">
               {currentUser && !mobileMenuOpen && (
                 <Link to={userRole === 'coach' ? '/coach/dashboard' : '/player/dashboard'}>
-                  <Button variant="secondary" size="sm" icon={User}>
-                    <span className="sr-only">Dashboard</span>
-                  </Button>
+                  <button className="p-2 rounded-lg bg-tiger-neutral-100 hover:bg-tiger-neutral-200 transition-colors">
+                    <User className="w-5 h-5 text-tiger-primary-black" />
+                  </button>
                 </Link>
               )}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-lg text-tiger-neutral-700 hover:bg-tiger-neutral-100 transition-colors"
+                className="p-2 rounded-lg hover:bg-tiger-neutral-100 transition-colors"
                 aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               >
                 {mobileMenuOpen ? (
-                  <X className="w-6 h-6" />
+                  <X className="w-6 h-6 text-tiger-primary-black" />
                 ) : (
-                  <Menu className="w-6 h-6" />
+                  <Menu className="w-6 h-6 text-tiger-primary-black" />
                 )}
               </button>
             </div>
@@ -136,15 +134,15 @@ export const Header: React.FC = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay - Full screen, native feel */}
       {mobileMenuOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            className="fixed inset-0 bg-black bg-opacity-60 z-40 lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="fixed top-20 left-0 right-0 bg-white shadow-tiger-2xl z-50 lg:hidden max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <div className="px-4 py-6 space-y-1">
+          <div className="fixed top-14 left-0 right-0 bottom-0 bg-white z-50 lg:hidden overflow-y-auto">
+            <div className="px-4 py-6 space-y-2">
               {publicNav.map((tab) => {
                 const active = isActive(tab.href);
                 return (
@@ -152,43 +150,44 @@ export const Header: React.FC = () => {
                     key={tab.id}
                     to={tab.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg font-semibold transition-all ${
+                    className={`flex items-center gap-4 px-5 py-4 rounded-xl font-semibold transition-all text-base ${
                       active
-                        ? 'bg-tiger-primary-black text-white'
-                        : 'text-tiger-neutral-700 hover:bg-tiger-neutral-100'
+                        ? 'bg-tiger-primary-black text-white shadow-lg'
+                        : 'text-tiger-neutral-700 hover:bg-tiger-neutral-100 active:bg-tiger-neutral-200'
                     }`}
                   >
-                    <tab.icon className="w-5 h-5" />
+                    <tab.icon className="w-6 h-6" />
                     <span>{tab.label}</span>
                   </Link>
                 );
               })}
 
-              <div className="pt-4 mt-4 border-t border-tiger-neutral-200">
+              <div className="pt-6 mt-6 border-t-2 border-tiger-neutral-200">
                 {currentUser ? (
                   <>
-                    <div className="px-4 py-2 text-sm text-tiger-neutral-600">
-                      Signed in as <span className="font-semibold text-tiger-primary-black">{currentUser.displayName}</span>
+                    <div className="px-5 py-3 mb-2 bg-tiger-neutral-50 rounded-xl">
+                      <div className="text-xs text-tiger-neutral-600 mb-1">Signed in as</div>
+                      <div className="font-bold text-tiger-primary-black">{currentUser.displayName}</div>
                     </div>
                     <Link
                       to={userRole === 'coach' ? '/coach/dashboard' : '/player/dashboard'}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold text-tiger-neutral-700 hover:bg-tiger-neutral-100 transition-all"
+                      className="flex items-center gap-4 px-5 py-4 rounded-xl font-semibold text-tiger-neutral-700 hover:bg-tiger-neutral-100 active:bg-tiger-neutral-200 transition-all text-base mb-2"
                     >
-                      <BarChart3 className="w-5 h-5" />
+                      <BarChart3 className="w-6 h-6" />
                       <span>Dashboard</span>
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold text-red-600 hover:bg-red-50 transition-all"
+                      className="w-full flex items-center gap-4 px-5 py-4 rounded-xl font-semibold text-red-600 hover:bg-red-50 active:bg-red-100 transition-all text-base"
                     >
-                      <LogOut className="w-5 h-5" />
+                      <LogOut className="w-6 h-6" />
                       <span>Sign Out</span>
                     </button>
                   </>
                 ) : (
-                  <Link to="/signin" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="primary" size="lg" fullWidth>
+                  <Link to="/signin" onClick={() => setMobileMenuOpen(false)} className="block">
+                    <Button variant="primary" size="xl" fullWidth className="text-base">
                       Sign In
                     </Button>
                   </Link>

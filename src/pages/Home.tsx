@@ -61,9 +61,9 @@ export const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 via-white to-tiger-neutral-100">
 
-      {/* Hero Section - Professional, Bold, Inspiring */}
+      {/* Hero Section - Mobile-first, native app feel */}
       <section className="relative bg-gradient-to-br from-tiger-primary-black via-tiger-neutral-900 to-tiger-neutral-800 text-white overflow-hidden">
-        {/* Subtle background pattern instead of emoji clutter */}
+        {/* Subtle background pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L30 60 M0 30 L60 30' stroke='%23ffffff' stroke-width='0.5' fill='none'/%3E%3C/svg%3E")`,
@@ -71,49 +71,49 @@ export const Home: React.FC = () => {
           }} />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
-          <div className="flex flex-col md:flex-row items-center gap-8 mb-8">
-            <div className="flex-shrink-0 bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
-              <Pin className="w-16 h-16 md:w-20 md:h-20" />
+        <div className="relative max-w-7xl mx-auto px-4 py-12 md:py-24 lg:py-32">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-6 md:mb-8">
+            <div className="flex-shrink-0 bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-tiger-2xl">
+              <Pin className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20" />
             </div>
             <div className="text-center md:text-left">
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none mb-2">
+              <h1 className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tight leading-none mb-1 md:mb-2">
                 WILLARD TIGERS
               </h1>
-              <div className="text-2xl md:text-3xl lg:text-4xl font-bold opacity-90 tracking-wide">
+              <div className="text-lg md:text-2xl lg:text-3xl font-bold opacity-90 tracking-wide">
                 BOWLING TEAM
               </div>
-              <div className="text-lg md:text-xl opacity-75 mt-3 font-medium">
+              <div className="text-sm md:text-lg lg:text-xl opacity-75 mt-2 md:mt-3 font-medium">
                 Focused. Connected. Driven.
               </div>
             </div>
           </div>
 
-          <p className="text-3xl md:text-4xl lg:text-5xl mb-4 font-black leading-tight max-w-4xl">
+          <p className="text-2xl md:text-3xl lg:text-5xl mb-3 md:mb-4 font-black leading-tight max-w-4xl">
             Strike Your Way to Victory
           </p>
 
-          <p className="text-lg md:text-xl max-w-3xl mb-8 opacity-90 leading-relaxed">
+          <p className="text-base md:text-lg lg:text-xl max-w-3xl mb-6 md:mb-8 opacity-90 leading-relaxed">
             Join the most dynamic high school bowling program in the region. We're building champions,
-            one frame at a time. Perfect your game, compete with the best, and leave your mark on the lanes.
+            one frame at a time.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
             <Button
               variant="primary"
-              size="xl"
+              size="lg"
               icon={ChevronRight}
               iconPosition="right"
               onClick={() => navigate('/contact')}
-              className="bg-white text-tiger-primary-black hover:bg-tiger-neutral-100"
+              className="bg-white text-tiger-primary-black hover:bg-tiger-neutral-100 text-base md:text-lg"
             >
               Join the Team
             </Button>
             <Button
               variant="outline"
-              size="xl"
+              size="lg"
               onClick={() => navigate('/roster')}
-              className="border-white text-white hover:bg-white hover:text-tiger-primary-black"
+              className="border-2 border-white text-white hover:bg-white hover:text-tiger-primary-black text-base md:text-lg"
             >
               Meet Our Athletes
             </Button>
@@ -121,9 +121,9 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Stats Grid - Clean, Professional, Data-Focused */}
-      <section className="max-w-7xl mx-auto px-6 -mt-12 md:-mt-16 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Stats Grid - Clean, Professional */}
+      <section className="max-w-7xl mx-auto px-4 -mt-8 md:-mt-12 lg:-mt-16 relative z-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           {stats.map((stat, idx) => (
             <StatCard
               key={idx}
@@ -139,37 +139,35 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Recent Highlights - Storytelling, Emotional Connection */}
-      <section className="max-w-7xl mx-auto px-6 py-16 md:py-20">
-        <div className="mb-8">
-          <h2 className="text-4xl md:text-5xl font-black text-tiger-primary-black mb-3">
+      {/* Recent Highlights */}
+      <section className="max-w-7xl mx-auto px-4 py-12 md:py-16 lg:py-20">
+        <div className="mb-6 md:mb-8">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-tiger-primary-black mb-2 md:mb-3">
             Recent Highlights
           </h2>
-          <p className="text-lg text-tiger-neutral-600">
-            Celebrating our team's achievements and milestones
+          <p className="text-sm md:text-base lg:text-lg text-tiger-neutral-600">
+            Celebrating our team's achievements
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
           {highlights.map((highlight, idx) => (
             <div
               key={idx}
-              className="bg-white rounded-2xl shadow-tiger-lg hover:shadow-tiger-xl transition-all p-6 md:p-8 group cursor-pointer border-2 border-transparent hover:border-tiger-neutral-200"
+              className="bg-white rounded-xl md:rounded-2xl shadow-tiger-lg hover:shadow-tiger-xl transition-all p-5 md:p-6 lg:p-8 group cursor-pointer border-2 border-transparent hover:border-tiger-neutral-200"
             >
-              <div className="flex items-start gap-4">
-                <div className={`flex-shrink-0 p-4 rounded-xl bg-gradient-to-br ${highlight.color} group-hover:scale-110 transition-transform`}>
-                  <highlight.icon className="w-8 h-8 text-white" />
+              <div className="flex items-start gap-3 md:gap-4">
+                <div className={`flex-shrink-0 p-3 md:p-4 rounded-xl bg-gradient-to-br ${highlight.color} group-hover:scale-110 transition-transform`}>
+                  <highlight.icon className="w-6 h-6 md:w-8 md:h-8 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-2xl md:text-3xl font-black text-tiger-primary-black">
-                      {highlight.title}
-                    </h3>
-                  </div>
-                  <p className="text-base md:text-lg text-tiger-neutral-700 leading-relaxed mb-3">
+                  <h3 className="text-lg md:text-2xl lg:text-3xl font-black text-tiger-primary-black mb-2">
+                    {highlight.title}
+                  </h3>
+                  <p className="text-sm md:text-base lg:text-lg text-tiger-neutral-700 leading-relaxed mb-2 md:mb-3">
                     {highlight.description}
                   </p>
-                  <p className="text-sm text-tiger-neutral-500 font-medium">
+                  <p className="text-xs md:text-sm text-tiger-neutral-500 font-medium">
                     {highlight.date}
                   </p>
                 </div>
@@ -178,40 +176,41 @@ export const Home: React.FC = () => {
           ))}
         </div>
 
-        <div className="mt-8 text-center">
+        <div className="mt-6 md:mt-8 text-center">
           <Button
             variant="ghost"
             size="lg"
             icon={ChevronRight}
             iconPosition="right"
             onClick={() => navigate('/schedule')}
+            className="text-base"
           >
             View Full Schedule
           </Button>
         </div>
       </section>
 
-      {/* Upcoming Match - Creates Urgency and Community */}
-      <section className="max-w-7xl mx-auto px-6 pb-16 md:pb-20">
-        <div className="bg-gradient-to-br from-tiger-neutral-900 to-tiger-primary-black rounded-3xl p-8 md:p-12 text-white shadow-tiger-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full -ml-48 -mb-48" />
+      {/* Upcoming Match */}
+      <section className="max-w-7xl mx-auto px-4 pb-12 md:pb-16 lg:pb-20">
+        <div className="bg-gradient-to-br from-tiger-neutral-900 to-tiger-primary-black rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 text-white shadow-tiger-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-48 h-48 md:w-64 md:h-64 bg-white opacity-5 rounded-full -mr-24 md:-mr-32 -mt-24 md:-mt-32" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 md:w-96 md:h-96 bg-white opacity-5 rounded-full -ml-36 md:-ml-48 -mb-36 md:-mb-48" />
 
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-6">
-              <Calendar className="w-8 h-8" />
-              <h2 className="text-3xl md:text-4xl font-black">
+            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+              <Calendar className="w-6 h-6 md:w-8 md:h-8" />
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black">
                 Next Match
               </h2>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
               <div>
-                <div className="text-lg opacity-90 mb-2">Friday, March 15th at 3:30 PM</div>
-                <div className="text-3xl md:text-4xl font-black mb-4">
+                <div className="text-sm md:text-base lg:text-lg opacity-90 mb-2">Friday, March 15th at 3:30 PM</div>
+                <div className="text-2xl md:text-3xl lg:text-4xl font-black mb-3 md:mb-4">
                   vs. Springfield Central
                 </div>
-                <div className="text-lg opacity-90">
+                <div className="text-sm md:text-base lg:text-lg opacity-90">
                   Willard Lanes • Home Match
                 </div>
               </div>
@@ -223,7 +222,7 @@ export const Home: React.FC = () => {
                   fullWidth
                   icon={Star}
                   onClick={() => navigate('/roster')}
-                  className="bg-white text-tiger-primary-black hover:bg-tiger-neutral-100"
+                  className="bg-white text-tiger-primary-black hover:bg-tiger-neutral-100 text-base"
                 >
                   View Team Roster
                 </Button>
@@ -232,7 +231,7 @@ export const Home: React.FC = () => {
                   size="lg"
                   fullWidth
                   onClick={() => navigate('/stats')}
-                  className="border-white text-white hover:bg-white hover:text-tiger-primary-black"
+                  className="border-2 border-white text-white hover:bg-white hover:text-tiger-primary-black text-base"
                 >
                   Check Team Stats
                 </Button>
@@ -242,23 +241,23 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Call to Action - Final Conversion Push */}
-      <section className="max-w-7xl mx-auto px-6 pb-20">
-        <div className="bg-gradient-to-r from-tiger-tiger-darkRed to-red-700 rounded-3xl p-12 md:p-16 text-center text-white shadow-tiger-2xl">
-          <h3 className="text-4xl md:text-5xl font-black mb-4">
+      {/* Call to Action */}
+      <section className="max-w-7xl mx-auto px-4 pb-16 md:pb-20">
+        <div className="bg-gradient-to-r from-tiger-tiger-darkRed to-red-700 rounded-2xl md:rounded-3xl p-8 md:p-12 lg:p-16 text-center text-white shadow-tiger-2xl">
+          <h3 className="text-2xl md:text-4xl lg:text-5xl font-black mb-3 md:mb-4">
             Ready to Roll?
           </h3>
-          <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-2xl mx-auto">
+          <p className="text-base md:text-xl lg:text-2xl mb-6 md:mb-8 opacity-90 max-w-2xl mx-auto">
             Practice starts every Monday & Wednesday at 3:30 PM.
             New members are always welcome!
           </p>
           <Button
             variant="primary"
-            size="xl"
+            size="lg"
             icon={ChevronRight}
             iconPosition="right"
             onClick={() => navigate('/contact')}
-            className="bg-white text-tiger-tiger-darkRed hover:bg-tiger-neutral-100"
+            className="bg-white text-tiger-tiger-darkRed hover:bg-tiger-neutral-100 text-base md:text-lg"
           >
             Get Started Today
           </Button>
