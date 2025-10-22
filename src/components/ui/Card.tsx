@@ -1,7 +1,7 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
 
-export interface CardProps {
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
   hover?: boolean;
@@ -12,7 +12,8 @@ export const Card: React.FC<CardProps> = ({
   children,
   className = '',
   hover = false,
-  padding = 'md'
+  padding = 'md',
+  ...rest
 }) => {
   const paddingClasses = {
     none: '',
@@ -22,7 +23,10 @@ export const Card: React.FC<CardProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-2xl shadow-tiger-lg ${hover ? 'hover:shadow-tiger-xl hover:-translate-y-1 transition-all duration-200' : ''} ${paddingClasses[padding]} ${className}`}>
+    <div
+      className={`bg-white rounded-2xl shadow-tiger-lg ${hover ? 'hover:shadow-tiger-xl hover:-translate-y-1 transition-all duration-200' : ''} ${paddingClasses[padding]} ${className}`}
+      {...rest}
+    >
       {children}
     </div>
   );

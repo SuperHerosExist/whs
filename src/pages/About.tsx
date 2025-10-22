@@ -1,6 +1,7 @@
 import React from 'react';
-import { Trophy, Heart, Target, Users } from 'lucide-react';
+import { Trophy, Heart, Target, Users, Info } from 'lucide-react';
 import { branding } from '@/config/branding';
+import { Card } from '@/components/ui';
 
 export const About: React.FC = () => {
   const values = [
@@ -28,23 +29,33 @@ export const About: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white">
-      {/* Page Header */}
-      <section className="bg-tiger-primary-black text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-display font-black mb-4">
-            About {branding.school.teamName} Bowling
-          </h1>
-          <p className="text-xl text-tiger-neutral-300 max-w-3xl">
-            Building champions on and off the lanes
+      {/* Header */}
+      <section className="bg-gradient-to-br from-tiger-primary-black via-tiger-neutral-900 to-tiger-neutral-800 text-white py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-4 bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl">
+              <Info className="w-12 h-12" />
+            </div>
+            <div>
+              <h1 className="text-4xl md:text-5xl font-black">
+                About {branding.school.teamName} Bowling
+              </h1>
+              <p className="text-xl opacity-90 mt-2">
+                Building champions on and off the lanes
+              </p>
+            </div>
+          </div>
+          <p className="text-lg opacity-75 max-w-3xl">
+            Discover our mission, values, and proud tradition of excellence
           </p>
         </div>
       </section>
 
-      {/* Mission Statement */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-tiger-lg p-8 md:p-12">
-            <h2 className="text-3xl font-display font-black text-tiger-primary-black mb-6">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        {/* Mission Statement */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <Card>
+            <h2 className="text-3xl font-black text-tiger-primary-black mb-6">
               Our Mission
             </h2>
             <p className="text-lg text-tiger-neutral-700 leading-relaxed mb-6">
@@ -57,42 +68,37 @@ export const About: React.FC = () => {
               Our program emphasizes technical skill development, mental toughness, sportsmanship, and academic excellence.
               We compete at the highest levels while maintaining the integrity and character that define Willard Tigers athletics.
             </p>
+          </Card>
+        </div>
+
+        {/* Core Values */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-black text-tiger-primary-black text-center mb-12">
+            Our Core Values
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {values.map((value, idx) => (
+              <Card key={idx} hover>
+                <div className="inline-flex p-4 rounded-lg bg-gradient-to-br from-tiger-primary-black to-tiger-tiger-darkRed mb-4">
+                  <value.icon className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-tiger-primary-black mb-3">
+                  {value.title}
+                </h3>
+                <p className="text-tiger-neutral-700 leading-relaxed">
+                  {value.description}
+                </p>
+              </Card>
+            ))}
           </div>
         </div>
-      </section>
 
-      {/* Core Values */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-display font-black text-tiger-primary-black text-center mb-12">
-          Our Core Values
-        </h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {values.map((value, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-xl shadow-tiger p-6 hover:shadow-tiger-lg transition-all hover:-translate-y-1"
-            >
-              <div className="inline-flex p-4 rounded-lg bg-gradient-to-br from-tiger-primary-black to-tiger-tiger-darkRed mb-4">
-                <value.icon className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-display font-bold text-tiger-primary-black mb-3">
-                {value.title}
-              </h3>
-              <p className="text-tiger-neutral-700 leading-relaxed">
-                {value.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Program History */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-display font-black text-tiger-primary-black mb-8 text-center">
+        {/* Program History */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <h2 className="text-3xl font-black text-tiger-primary-black mb-8 text-center">
             Program History
           </h2>
-          <div className="bg-gradient-to-r from-tiger-primary-black to-tiger-tiger-darkRed rounded-2xl p-8 md:p-12 text-white">
+          <Card className="bg-gradient-to-r from-tiger-primary-black to-tiger-tiger-darkRed text-white">
             <div className="space-y-6">
               <p className="text-lg leading-relaxed">
                 The Willard High School bowling program has a proud tradition of competitive excellence and character
@@ -105,7 +111,7 @@ export const About: React.FC = () => {
               </p>
               <div className="grid grid-cols-3 gap-6 mt-8 pt-8 border-t border-white border-opacity-20">
                 <div className="text-center">
-                  <div className="text-4xl font-display font-black text-tiger-tiger-gold mb-2">
+                  <div className="text-4xl font-black text-tiger-tiger-gold mb-2">
                     3
                   </div>
                   <div className="text-sm font-semibold text-tiger-neutral-300">
@@ -113,7 +119,7 @@ export const About: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-display font-black text-tiger-tiger-gold mb-2">
+                  <div className="text-4xl font-black text-tiger-tiger-gold mb-2">
                     15
                   </div>
                   <div className="text-sm font-semibold text-tiger-neutral-300">
@@ -121,7 +127,7 @@ export const About: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-display font-black text-tiger-tiger-gold mb-2">
+                  <div className="text-4xl font-black text-tiger-tiger-gold mb-2">
                     100+
                   </div>
                   <div className="text-sm font-semibold text-tiger-neutral-300">
@@ -130,21 +136,19 @@ export const About: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
-      </section>
 
-      {/* School Motto */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* School Motto */}
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-2xl font-display font-black text-tiger-primary-black mb-4">
+          <h2 className="text-2xl font-black text-tiger-primary-black mb-4">
             {branding.school.motto}
           </h2>
           <p className="text-lg text-tiger-neutral-600 italic">
             {branding.school.tagline}
           </p>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

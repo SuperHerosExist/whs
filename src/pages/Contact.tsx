@@ -67,14 +67,24 @@ export const Contact: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white">
-      {/* Page Header */}
-      <section className="bg-tiger-primary-black text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-display font-black mb-4">
-            Contact Us
-          </h1>
-          <p className="text-xl text-tiger-neutral-300">
-            Interested in joining the team? Get in touch!
+      {/* Header */}
+      <section className="bg-gradient-to-br from-tiger-primary-black via-tiger-neutral-900 to-tiger-neutral-800 text-white py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-4 bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl">
+              <Mail className="w-12 h-12" />
+            </div>
+            <div>
+              <h1 className="text-4xl md:text-5xl font-black">
+                Contact Us
+              </h1>
+              <p className="text-xl opacity-90 mt-2">
+                Interested in joining the team? Get in touch!
+              </p>
+            </div>
+          </div>
+          <p className="text-lg opacity-75 max-w-3xl">
+            Connect with us to learn more about the program or join the Tigers
           </p>
         </div>
       </section>

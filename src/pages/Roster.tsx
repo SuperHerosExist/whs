@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Player } from '@/types';
-import { Users, ChevronRight } from 'lucide-react';
+import { Users, Search, Trophy, TrendingUp, Target, Mail, X } from 'lucide-react';
+import { Card, Badge, Button, EmptyState } from '@/components/ui';
 
 export const Roster: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterGrade, setFilterGrade] = useState<string>('all');
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -39,204 +42,312 @@ export const Roster: React.FC = () => {
     fetchPlayers();
   }, []);
 
+  const filteredPlayers = players.filter(player => {
+    const matchesSearch = player.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (player.bio && player.bio.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesGrade = filterGrade === 'all' || player.grade === filterGrade;
+    return matchesSearch && matchesGrade;
+  });
+
+  const grades = Array.from(new Set(players.map(p => p.grade).filter(Boolean))).sort();
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-willard-grey-50 to-white flex items-center justify-center">
-        <div className="text-7xl animate-spin">🎳</div>
+      <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-tiger-primary-black"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-willard-grey-50 via-willard-white to-willard-grey-100">
-      {/* 🏆 BOLD HEADER */}
-      <section className="bg-gradient-to-br from-willard-black via-willard-grey-900 to-willard-grey-800 text-white py-20">
+    <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white">
+      {/* Header */}
+      <section className="bg-gradient-to-br from-tiger-primary-black via-tiger-neutral-900 to-tiger-neutral-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center gap-6 mb-6">
-            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
-              <Users className="w-16 h-16" />
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-4 bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl">
+              <Users className="w-12 h-12" />
             </div>
             <div>
-              <h1 className="text-6xl md:text-7xl font-black">
-                TEAM ROSTER
+              <h1 className="text-4xl md:text-5xl font-black">
+                Team Roster
               </h1>
-              <p className="text-2xl md:text-3xl text-willard-grey-300 mt-2 font-bold">
-                Meet our amazing bowlers 🎳
+              <p className="text-xl opacity-90 mt-2">
+                Meet the Tigers
               </p>
             </div>
           </div>
+          <p className="text-lg opacity-75 max-w-3xl">
+            Our dedicated athletes competing at the highest level
+          </p>
         </div>
       </section>
 
-      {/* 👥 DYNAMIC PLAYER CARDS */}
-      <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {players.map((player) => (
-            <div
-              key={player.id}
-              onClick={() => setSelectedPlayer(player)}
-              className="bg-white rounded-3xl p-8 shadow-tiger-lg hover:shadow-tiger-2xl hover:-translate-y-4 transition-all cursor-pointer group relative overflow-hidden"
-            >
-              {/* Bowling pin decoration */}
-              <div className="absolute top-2 right-2 text-6xl opacity-5 group-hover:opacity-10 group-hover:rotate-12 transition-all">
-                🎳
-              </div>
+      <div className="max-w-7xl mx-auto px-6 -mt-8 pb-20">
+        {/* Search and Filters */}
+        <Card className="mb-8">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tiger-neutral-400" />
+              <input
+                type="text"
+                placeholder="Search by name or bio..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-tiger-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tiger-primary-black focus:border-transparent transition"
+              />
+            </div>
+            <div className="flex gap-2">
+              <select
+                value={filterGrade}
+                onChange={(e) => setFilterGrade(e.target.value)}
+                className="px-4 py-3 border border-tiger-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tiger-primary-black focus:border-transparent transition"
+              >
+                <option value="all">All Grades</option>
+                {grades.map(grade => (
+                  <option key={grade} value={grade}>
+                    Grade {grade}
+                  </option>
+                ))}
+              </select>
+              {(searchTerm || filterGrade !== 'all') && (
+                <Button
+                  variant="ghost"
+                  size="md"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setFilterGrade('all');
+                  }}
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+          </div>
 
-              <div className="flex items-start gap-6 mb-6">
-                {/* Player Photo/Emoji */}
-                <div className="text-8xl group-hover:scale-125 transition-transform">
-                  {player.photoURL ? (
+          {filteredPlayers.length > 0 && (
+            <div className="mt-4 text-sm text-tiger-neutral-600">
+              Showing {filteredPlayers.length} of {players.length} athlete{players.length !== 1 ? 's' : ''}
+            </div>
+          )}
+        </Card>
+
+        {/* Player Grid */}
+        {filteredPlayers.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPlayers.map(player => (
+              <Card
+                key={player.id}
+                hover
+                className="cursor-pointer"
+                onClick={() => setSelectedPlayer(player)}
+              >
+                <div className="text-center">
+                  <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-tiger-primary-black to-tiger-tiger-darkRed flex items-center justify-center overflow-hidden mb-4">
+                    {player.photoURL ? (
+                      <img
+                        src={player.photoURL}
+                        alt={player.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Users className="w-12 h-12 text-white" />
+                    )}
+                  </div>
+
+                  <h3 className="text-xl font-black text-tiger-primary-black mb-1">
+                    {player.name}
+                  </h3>
+
+                  {player.jerseyNumber && (
+                    <div className="text-sm text-tiger-neutral-600 mb-3">
+                      #{player.jerseyNumber}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    {player.grade && (
+                      <Badge variant="default">
+                        Grade {player.grade}
+                      </Badge>
+                    )}
+                    {player.graduationYear && (
+                      <Badge variant="info">
+                        Class of {player.graduationYear}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-tiger-neutral-50 rounded-lg p-3">
+                      <div className="text-2xl font-black text-tiger-primary-black">
+                        {player.averageScore || '--'}
+                      </div>
+                      <div className="text-xs text-tiger-neutral-600 font-semibold">
+                        Average
+                      </div>
+                    </div>
+                    <div className="bg-tiger-neutral-50 rounded-lg p-3">
+                      <div className="text-2xl font-black text-tiger-primary-black">
+                        {player.highGame || '--'}
+                      </div>
+                      <div className="text-xs text-tiger-neutral-600 font-semibold">
+                        High Game
+                      </div>
+                    </div>
+                  </div>
+
+                  {player.bio && (
+                    <p className="text-sm text-tiger-neutral-700 line-clamp-2 mb-4">
+                      {player.bio}
+                    </p>
+                  )}
+
+                  <Button variant="ghost" size="sm" fullWidth>
+                    View Profile
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            icon={Search}
+            title="No athletes found"
+            description={searchTerm || filterGrade !== 'all'
+              ? "Try adjusting your search or filters"
+              : "No active athletes in the roster yet"}
+            actionLabel={searchTerm || filterGrade !== 'all' ? "Clear Filters" : undefined}
+            onAction={() => {
+              setSearchTerm('');
+              setFilterGrade('all');
+            }}
+          />
+        )}
+      </div>
+
+      {/* Player Detail Modal */}
+      {selectedPlayer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-tiger-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in duration-300">
+            <div className="sticky top-0 bg-white border-b border-tiger-neutral-200 p-6 flex items-center justify-between z-10">
+              <h2 className="text-2xl font-black text-tiger-primary-black">
+                Player Profile
+              </h2>
+              <button
+                onClick={() => setSelectedPlayer(null)}
+                className="p-2 hover:bg-tiger-neutral-100 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-8">
+              <div className="text-center mb-8">
+                <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-tiger-primary-black to-tiger-tiger-darkRed flex items-center justify-center overflow-hidden mb-4">
+                  {selectedPlayer.photoURL ? (
                     <img
-                      src={player.photoURL}
-                      alt={player.name}
-                      className="w-20 h-20 rounded-full object-cover"
+                      src={selectedPlayer.photoURL}
+                      alt={selectedPlayer.name}
+                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-20 h-20 bg-gradient-to-br from-willard-grey-800 to-willard-black rounded-full flex items-center justify-center text-4xl">
-                      🎯
-                    </div>
+                    <Users className="w-16 h-16 text-white" />
                   )}
                 </div>
 
-                <div className="flex-1">
-                  <h3 className="text-3xl font-black text-willard-black mb-2 group-hover:scale-105 transition-transform">
-                    {player.name}
-                  </h3>
-                  <div className="inline-block bg-gradient-to-r from-willard-grey-800 to-willard-black text-white px-4 py-2 rounded-full text-sm font-bold shadow-tiger">
-                    Grade {player.grade}
-                  </div>
-                </div>
-              </div>
+                <h3 className="text-3xl font-black text-tiger-primary-black mb-2">
+                  {selectedPlayer.name}
+                </h3>
 
-              {/* Stats */}
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-willard-grey-100 to-willard-grey-200 rounded-2xl p-4 shadow-inner">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-bold text-willard-grey-600 uppercase tracking-wide">
-                      Average
-                    </span>
-                    <span className="font-black text-willard-black text-3xl">
-                      {player.averageScore || 0}
-                    </span>
-                  </div>
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  {selectedPlayer.grade && (
+                    <Badge variant="default" size="lg">
+                      Grade {selectedPlayer.grade}
+                    </Badge>
+                  )}
+                  {selectedPlayer.jerseyNumber && (
+                    <Badge variant="info" size="lg">
+                      #{selectedPlayer.jerseyNumber}
+                    </Badge>
+                  )}
                 </div>
 
-                <div className="bg-gradient-to-r from-willard-grey-50 to-willard-grey-100 rounded-2xl p-4 shadow-inner">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-bold text-willard-grey-600 uppercase tracking-wide">
-                      High Game
-                    </span>
-                    <span className="font-black text-willard-grey-800 text-3xl">
-                      {player.highGame || 0}
-                    </span>
+                {selectedPlayer.email && (
+                  <div className="flex items-center justify-center gap-2 text-tiger-neutral-600">
+                    <Mail className="w-4 h-4" />
+                    <span className="text-sm">{selectedPlayer.email}</span>
                   </div>
-                </div>
-              </div>
-
-              {/* View Button */}
-              <div className="mt-6 pt-6 border-t-2 border-willard-grey-200">
-                <button className="text-willard-black text-sm font-black hover:text-willard-grey-700 flex items-center gap-2 group-hover:gap-4 transition-all uppercase tracking-wide">
-                  View Full Stats
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {players.length === 0 && (
-          <div className="text-center py-20">
-            <div className="text-9xl mb-6">🎳</div>
-            <h3 className="text-3xl font-black text-willard-grey-700 mb-4">
-              No Players Yet
-            </h3>
-            <p className="text-xl text-willard-grey-500">
-              Check back soon to meet our team!
-            </p>
-          </div>
-        )}
-      </section>
-
-      {/* 🔥 PLAYER DETAIL MODAL */}
-      {selectedPlayer && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-6 z-50 backdrop-blur-sm animate-in fade-in"
-          onClick={() => setSelectedPlayer(null)}
-        >
-          <div
-            className="bg-white rounded-3xl p-10 max-w-lg w-full shadow-tiger-2xl transform scale-100 animate-in zoom-in"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Player Info */}
-            <div className="text-center mb-8">
-              <div className="text-9xl mb-6">
-                {selectedPlayer.photoURL ? (
-                  <img
-                    src={selectedPlayer.photoURL}
-                    alt={selectedPlayer.name}
-                    className="w-32 h-32 rounded-full object-cover mx-auto shadow-tiger-xl"
-                  />
-                ) : (
-                  '🎯'
                 )}
               </div>
-              <h3 className="text-5xl font-black text-willard-black mb-4">
-                {selectedPlayer.name}
-              </h3>
-              <div className="inline-block bg-gradient-to-r from-willard-grey-900 to-willard-black text-white px-6 py-3 rounded-full font-black text-lg shadow-tiger-lg">
-                Grade {selectedPlayer.grade}
+
+              {selectedPlayer.bio && (
+                <div className="mb-8">
+                  <h4 className="font-bold text-tiger-primary-black mb-2">About</h4>
+                  <p className="text-tiger-neutral-700 leading-relaxed">
+                    {selectedPlayer.bio}
+                  </p>
+                </div>
+              )}
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <Card padding="md">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <TrendingUp className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-tiger-neutral-600 font-semibold">
+                        Average Score
+                      </div>
+                      <div className="text-2xl font-black text-tiger-primary-black">
+                        {selectedPlayer.averageScore || '--'}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card padding="md">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-yellow-100 rounded-lg">
+                      <Trophy className="w-5 h-5 text-yellow-600" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-tiger-neutral-600 font-semibold">
+                        High Game
+                      </div>
+                      <div className="text-2xl font-black text-tiger-primary-black">
+                        {selectedPlayer.highGame || '--'}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card padding="md">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <Target className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-tiger-neutral-600 font-semibold">
+                        Games Played
+                      </div>
+                      <div className="text-2xl font-black text-tiger-primary-black">
+                        {selectedPlayer.gamesPlayed || 0}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
               </div>
+
+              {selectedPlayer.graduationYear && (
+                <div className="mt-6 p-4 bg-tiger-neutral-50 rounded-lg text-center">
+                  <p className="text-sm text-tiger-neutral-600">
+                    Graduating in <span className="font-bold text-tiger-primary-black">{selectedPlayer.graduationYear}</span>
+                  </p>
+                </div>
+              )}
             </div>
-
-            {/* Detailed Stats */}
-            <div className="space-y-4">
-              <div className="bg-gradient-to-br from-willard-grey-900 to-willard-black text-white rounded-3xl p-8 shadow-tiger-xl">
-                <div className="text-sm font-bold mb-2 opacity-90 uppercase tracking-wide">
-                  🎯 Bowling Average
-                </div>
-                <div className="text-6xl font-black">
-                  {selectedPlayer.averageScore || 0}
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-willard-grey-800 to-willard-grey-900 text-white rounded-3xl p-8 shadow-tiger-xl">
-                <div className="text-sm font-bold mb-2 opacity-90 uppercase tracking-wide">
-                  🔥 High Game
-                </div>
-                <div className="text-6xl font-black">
-                  {selectedPlayer.highGame || 0}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-willard-grey-700 to-willard-grey-800 text-white rounded-3xl p-6 shadow-tiger-lg">
-                  <div className="text-xs font-bold mb-1 opacity-90 uppercase tracking-wide">
-                    Games
-                  </div>
-                  <div className="text-4xl font-black">
-                    {selectedPlayer.gamesPlayed || 0}
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-willard-grey-600 to-willard-grey-700 text-white rounded-3xl p-6 shadow-tiger-lg">
-                  <div className="text-xs font-bold mb-1 opacity-90 uppercase tracking-wide">
-                    Year
-                  </div>
-                  <div className="text-4xl font-black">
-                    {selectedPlayer.grade}th
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedPlayer(null)}
-              className="mt-8 w-full bg-gradient-to-r from-willard-black to-willard-grey-800 text-white py-5 rounded-2xl font-black text-xl hover:shadow-tiger-xl transition-all hover:scale-105"
-            >
-              CLOSE
-            </button>
           </div>
         </div>
       )}
