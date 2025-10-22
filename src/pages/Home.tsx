@@ -72,23 +72,31 @@ export const Home: React.FC = () => {
 
       {/* 🔥 HERO SECTION - FULL WIDTH CENTERED */}
       <section className="relative bg-black text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 left-10 text-7xl">🎳</div>
-          <div className="absolute bottom-20 right-10 text-7xl">🎯</div>
-        </div>
+        {/* ESPN Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black opacity-90" />
 
         <div className="relative w-full px-6 py-20 md:py-28 text-center">
-          {/* Logo */}
-          <div className="mb-8 flex justify-center">
-            <img src="/assets/logos/tiger-logo.jpg" alt="Willard Tigers" className="h-24 md:h-32 rounded-full shadow-2xl ring-4 ring-yellow-500 ring-opacity-50" />
+          {/* Tiger Logo with Glow */}
+          <div className="mb-12 flex justify-center animate-scale-in">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-yellow-500 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-500 rounded-full" />
+              <img
+                src="/assets/logos/tiger-logo.jpg"
+                alt="Willard Tigers"
+                className="relative h-28 md:h-36 rounded-full shadow-2xl ring-4 ring-yellow-500/30 group-hover:ring-yellow-500/60 transition-all duration-300 group-hover:scale-105"
+              />
+            </div>
           </div>
 
           {/* Title */}
           <h1 className="font-heading text-7xl md:text-8xl lg:text-9xl tracking-wider leading-none mb-6 animate-slide-up">
             WILLARD TIGERS
           </h1>
-          <div className="text-xl md:text-2xl font-bold opacity-90 mb-12">
-            BOWLING TEAM
+          <div className="text-center mb-10 animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <div className="inline-block bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-6 py-2 rounded-full font-bold text-sm uppercase tracking-widest shadow-glow">
+              Bowling Team
+            </div>
           </div>
 
           {/* Tagline */}
