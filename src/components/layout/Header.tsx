@@ -44,21 +44,27 @@ export const Header: React.FC = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-1">
               {publicNav.map((tab) => {
                 const active = isActive(tab.href);
                 return (
                   <Link
                     key={tab.id}
                     to={tab.href}
-                    className={`px-4 py-2.5 rounded-xl font-semibold transition-all flex items-center gap-2 ${
-                      active
-                        ? 'bg-tiger-primary-black text-white shadow-tiger'
-                        : 'text-tiger-neutral-700 hover:bg-tiger-neutral-100 hover:text-tiger-primary-black'
-                    }`}
+                    className="relative px-5 py-3 font-bold transition-all flex items-center gap-2 group text-base"
                   >
-                    <tab.icon className="w-4 h-4" />
-                    <span>{tab.label}</span>
+                    <tab.icon className={`w-5 h-5 transition-all group-hover:scale-110 ${
+                      active ? 'text-tiger-tiger-gold' : 'text-tiger-neutral-600 group-hover:text-tiger-primary-black'
+                    }`} />
+                    <span className={`transition-colors ${
+                      active ? 'text-tiger-primary-black' : 'text-tiger-neutral-700 group-hover:text-tiger-primary-black'
+                    }`}>
+                      {tab.label}
+                    </span>
+                    {/* Animated underline */}
+                    <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-tiger-tiger-gold to-tiger-tiger-darkRed rounded-full transition-all duration-300 ${
+                      active ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100'
+                    }`} />
                   </Link>
                 );
               })}
@@ -101,8 +107,12 @@ export const Header: React.FC = () => {
                   )}
                 </div>
               ) : (
-                <Link to="/signin" className="ml-2">
-                  <Button variant="primary" size="md">
+                <Link to="/signin" className="ml-3">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    className="bg-gradient-to-r from-tiger-tiger-gold to-yellow-500 text-tiger-primary-black hover:from-tiger-tiger-gold hover:to-yellow-400 font-black shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                  >
                     Sign In
                   </Button>
                 </Link>

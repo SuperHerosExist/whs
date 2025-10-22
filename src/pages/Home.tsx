@@ -93,8 +93,8 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Live Stats Grid - Real Data */}
-      <section className="max-w-7xl mx-auto px-4 -mt-8 md:-mt-12 lg:-mt-16 relative z-10 mb-12 md:mb-16">
+      {/* Live Stats Grid - Real Data with Enhanced Design */}
+      <section className="max-w-7xl mx-auto px-4 -mt-8 md:-mt-12 lg:-mt-16 relative z-10 mb-16 md:mb-20">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <StatCard
             icon={TrendingUp}
@@ -130,25 +130,27 @@ export const Home: React.FC = () => {
           />
         </div>
 
-        {/* Live Stats Badge */}
-        <div className="flex justify-center mt-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-lg border-2 border-green-500">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-sm font-bold text-tiger-primary-black">LIVE STATS</span>
+        {/* Live Stats Badge with glow effect */}
+        <div className="flex justify-center mt-6">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white rounded-full shadow-xl border-2 border-green-500 animate-glow-pulse">
+            <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-sm font-black text-tiger-primary-black tracking-wide">LIVE STATS</span>
           </div>
         </div>
       </section>
 
-      {/* Recent Highlights - More Visual */}
-      <section className="max-w-7xl mx-auto px-4 py-12 md:py-16 lg:py-20">
-        <div className="mb-8 md:mb-12 text-center md:text-left">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <Award className="w-8 h-8 md:w-10 md:h-10 text-tiger-tiger-gold" />
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-tiger-primary-black">
-              Recent Highlights
-            </h2>
+      {/* Recent Highlights - Enhanced Visual Design */}
+      <section className="max-w-7xl mx-auto px-4 py-12 md:py-16 lg:py-24">
+        <div className="mb-10 md:mb-14 text-center">
+          <div className="inline-flex items-center justify-center gap-3 mb-5">
+            <div className="w-12 h-1 bg-gradient-to-r from-transparent via-tiger-tiger-gold to-transparent" />
+            <Award className="w-10 h-10 md:w-12 md:h-12 text-tiger-tiger-gold animate-pulse" />
+            <div className="w-12 h-1 bg-gradient-to-r from-transparent via-tiger-tiger-gold to-transparent" />
           </div>
-          <p className="text-base md:text-lg lg:text-xl text-tiger-neutral-600 font-medium">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-tiger-primary-black mb-4 tracking-tight">
+            Recent Highlights
+          </h2>
+          <p className="text-base md:text-lg lg:text-xl text-tiger-neutral-600 font-semibold max-w-2xl mx-auto">
             Celebrating our team's achievements and milestones
           </p>
         </div>
@@ -219,12 +221,12 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Upcoming Match - More Prominent */}
-      <section className="max-w-7xl mx-auto px-4 pb-12 md:pb-16 lg:pb-20">
-        <div className="relative bg-gradient-to-br from-tiger-primary-black via-tiger-neutral-900 to-tiger-neutral-800 rounded-3xl md:rounded-[2rem] p-8 md:p-10 lg:p-14 text-white shadow-2xl overflow-hidden border-4 border-tiger-tiger-gold">
-          {/* Animated background blobs */}
-          <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-tiger-tiger-gold opacity-10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 left-0 w-80 h-80 md:w-[32rem] md:h-[32rem] bg-tiger-tiger-darkRed opacity-10 rounded-full blur-3xl animate-pulse delay-1000" />
+      {/* Upcoming Match - Ultra Prominent Design */}
+      <section className="max-w-7xl mx-auto px-4 pb-12 md:pb-16 lg:pb-24">
+        <div className="relative bg-gradient-to-br from-tiger-primary-black via-tiger-neutral-900 to-tiger-neutral-800 rounded-3xl md:rounded-[2.5rem] p-8 md:p-12 lg:p-16 text-white shadow-2xl overflow-hidden border-4 border-tiger-tiger-gold hover:border-yellow-400 transition-all duration-300 group">
+          {/* Animated background blobs with enhanced effect */}
+          <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-tiger-tiger-gold opacity-10 rounded-full blur-3xl animate-pulse group-hover:opacity-20 transition-opacity" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 md:w-[32rem] md:h-[32rem] bg-tiger-tiger-darkRed opacity-10 rounded-full blur-3xl animate-pulse delay-1000 group-hover:opacity-20 transition-opacity" />
 
           <div className="relative z-10">
             <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
@@ -277,11 +279,11 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* JOIN THE TEAM - Super Prominent CTA */}
-      <section className="max-w-7xl mx-auto px-4 pb-16 md:pb-20">
-        <div className="relative bg-gradient-to-r from-tiger-tiger-darkRed via-red-600 to-tiger-tiger-darkRed rounded-3xl md:rounded-[2rem] p-12 md:p-16 lg:p-24 text-center text-white shadow-2xl overflow-hidden border-4 border-tiger-tiger-gold">
-          {/* Animated elements */}
-          <div className="absolute inset-0 opacity-20">
+      {/* JOIN THE TEAM - Ultimate Conversion CTA */}
+      <section className="max-w-7xl mx-auto px-4 pb-16 md:pb-24">
+        <div className="relative bg-gradient-to-r from-tiger-tiger-darkRed via-red-600 to-tiger-tiger-darkRed rounded-3xl md:rounded-[2.5rem] p-12 md:p-16 lg:p-28 text-center text-white shadow-2xl overflow-hidden border-4 border-tiger-tiger-gold hover:shadow-[0_0_80px_rgba(212,175,55,0.6)] transition-all duration-500 group">
+          {/* Animated elements with enhanced interactivity */}
+          <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity">
             <div className="absolute top-10 left-10 w-48 h-48 md:w-64 md:h-64 bg-white rounded-full blur-3xl animate-pulse" />
             <div className="absolute bottom-10 right-10 w-64 h-64 md:w-96 md:h-96 bg-tiger-tiger-gold rounded-full blur-3xl animate-pulse delay-500" />
           </div>
