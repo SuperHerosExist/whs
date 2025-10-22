@@ -7,12 +7,13 @@ import { getStorage } from 'firebase/storage';
 // Note: These values are public and safe to commit to git
 // Security is enforced through Firestore rules, not by hiding config
 const firebaseConfig = {
-  apiKey: "AIzaSyA_pNTE0M0zt8Y9fR3c8kYkK5UaAa5Hu9w",
+  apiKey: "AIzaSyCRT4Issh5sk4x0_LJAn3TQoE2IpkbUiZ0",
   authDomain: "willard-tigers-bowling.firebaseapp.com",
   projectId: "willard-tigers-bowling",
   storageBucket: "willard-tigers-bowling.firebasestorage.app",
-  messagingSenderId: "1008005824516",
-  appId: "1:1008005824516:web:1aa0fc78e8e4ef8ae55ef9"
+  messagingSenderId: "412971953723",
+  appId: "1:412971953723:web:fc33719bbc9b45a081f61e",
+  measurementId: "G-WSY46CH967"
 };
 
 // Initialize Firebase
