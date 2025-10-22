@@ -1,161 +1,267 @@
 import React from 'react';
-import { Trophy, Users, Target, TrendingUp, ChevronRight, Zap, Pin, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Trophy, Users, Target, TrendingUp, ChevronRight, Calendar, Star, Pin } from 'lucide-react';
+import { Button, StatCard } from '@/components/ui';
 
 export const Home: React.FC = () => {
+  const navigate = useNavigate();
+
   const stats = [
-    { icon: TrendingUp, label: 'Team Average', value: 202, emoji: '📊', gradient: 'from-willard-grey-800 to-willard-black' },
-    { icon: Users, label: 'Team Members', value: 24, emoji: '👥', gradient: 'from-willard-grey-700 to-willard-grey-900' },
-    { icon: Trophy, label: 'Season Wins', value: 15, emoji: '🏆', gradient: 'from-willard-grey-600 to-willard-grey-800' },
-    { icon: Target, label: 'Championships', value: 3, emoji: '🥇', gradient: 'from-willard-black to-willard-grey-900' }
+    {
+      icon: TrendingUp,
+      label: 'Team Average',
+      value: '202',
+      subtext: 'Season high',
+      trend: 'up' as const,
+      trendValue: '+8 pts',
+      color: 'from-blue-600 to-blue-800'
+    },
+    {
+      icon: Users,
+      label: 'Active Athletes',
+      value: '24',
+      subtext: 'Varsity roster',
+      color: 'from-tiger-tiger-darkRed to-red-700'
+    },
+    {
+      icon: Trophy,
+      label: 'Season Wins',
+      value: '15',
+      subtext: '15-3 record',
+      trend: 'up' as const,
+      trendValue: '+5',
+      color: 'from-green-600 to-green-700'
+    },
+    {
+      icon: Target,
+      label: 'Championships',
+      value: '3',
+      subtext: 'District titles',
+      color: 'from-tiger-tiger-gold to-yellow-600'
+    }
+  ];
+
+  const highlights = [
+    {
+      icon: Trophy,
+      title: 'District Champions',
+      description: 'Team posted a season-high 4,012 total pins to claim the district title',
+      date: '2 days ago',
+      color: 'from-tiger-tiger-gold to-yellow-500'
+    },
+    {
+      icon: Star,
+      title: 'Near Perfect Game',
+      description: 'Alex Johnson bowled a 289 at Regional Tournament, missing perfection by just 11 pins',
+      date: '1 week ago',
+      color: 'from-purple-600 to-purple-700'
+    }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-willard-grey-50 via-willard-white to-willard-grey-100">
+    <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 via-white to-tiger-neutral-100">
 
-      {/* 🔥 HERO SECTION - MASSIVE AND BOLD */}
-      <section className="relative bg-gradient-to-br from-willard-black via-willard-grey-900 to-willard-grey-800 text-white overflow-hidden">
-        {/* Animated bowling pins background */}
-        <div className="absolute inset-0 overflow-hidden opacity-10">
-          <div className="absolute top-10 left-10 text-9xl animate-bounce">🎳</div>
-          <div className="absolute bottom-10 right-20 text-7xl animate-pulse">🎯</div>
-          <div className="absolute top-1/2 right-10 text-8xl animate-spin-slow">⚡</div>
-          <div className="absolute bottom-20 left-1/4 text-6xl animate-float">🎳</div>
+      {/* Hero Section - Professional, Bold, Inspiring */}
+      <section className="relative bg-gradient-to-br from-tiger-primary-black via-tiger-neutral-900 to-tiger-neutral-800 text-white overflow-hidden">
+        {/* Subtle background pattern instead of emoji clutter */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L30 60 M0 30 L60 30' stroke='%23ffffff' stroke-width='0.5' fill='none'/%3E%3C/svg%3E")`,
+            backgroundSize: '60px 60px'
+          }} />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-6 py-32 md:py-40">
-          <div className="flex items-center gap-6 mb-6">
-            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
-              <Pin className="w-20 h-20" />
+        <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
+          <div className="flex flex-col md:flex-row items-center gap-8 mb-8">
+            <div className="flex-shrink-0 bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
+              <Pin className="w-16 h-16 md:w-20 md:h-20" />
             </div>
-            <div>
-              <h1 className="text-7xl md:text-8xl font-black tracking-tight leading-none">
+            <div className="text-center md:text-left">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none mb-2">
                 WILLARD TIGERS
               </h1>
-              <div className="text-3xl md:text-4xl font-bold opacity-90 mt-2 tracking-wide">
+              <div className="text-2xl md:text-3xl lg:text-4xl font-bold opacity-90 tracking-wide">
                 BOWLING TEAM
+              </div>
+              <div className="text-lg md:text-xl opacity-75 mt-3 font-medium">
+                Focused. Connected. Driven.
               </div>
             </div>
           </div>
 
-          <p className="text-4xl md:text-5xl mb-6 font-black leading-tight">
-            🔥 Strike Your Way to Victory 🔥
+          <p className="text-3xl md:text-4xl lg:text-5xl mb-4 font-black leading-tight max-w-4xl">
+            Strike Your Way to Victory
           </p>
 
-          <p className="text-xl md:text-2xl max-w-3xl mb-10 opacity-90 leading-relaxed font-medium">
-            Join the most dynamic high school bowling program in the region. We're building champions, one frame at a time.
-            Perfect your game, compete with the best, and leave your mark on the lanes!
+          <p className="text-lg md:text-xl max-w-3xl mb-8 opacity-90 leading-relaxed">
+            Join the most dynamic high school bowling program in the region. We're building champions,
+            one frame at a time. Perfect your game, compete with the best, and leave your mark on the lanes.
           </p>
 
-          <button
-            onClick={() => window.location.href = '/contact'}
-            className="bg-white text-willard-black px-12 py-6 rounded-full font-black text-xl hover:bg-willard-grey-100 transition-all hover:scale-110 hover:shadow-tiger-2xl flex items-center gap-4 shadow-tiger-xl group"
-          >
-            <Zap className="w-7 h-7 group-hover:rotate-12 transition-transform" />
-            JOIN THE TEAM
-            <ChevronRight className="w-7 h-7 group-hover:translate-x-2 transition-transform" />
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button
+              variant="primary"
+              size="xl"
+              icon={ChevronRight}
+              iconPosition="right"
+              onClick={() => navigate('/contact')}
+              className="bg-white text-tiger-primary-black hover:bg-tiger-neutral-100"
+            >
+              Join the Team
+            </Button>
+            <Button
+              variant="outline"
+              size="xl"
+              onClick={() => navigate('/roster')}
+              className="border-white text-white hover:bg-white hover:text-tiger-primary-black"
+            >
+              Meet Our Athletes
+            </Button>
+          </div>
         </div>
       </section>
 
-      {/* 📊 STATS GRID - BOLD AND DYNAMIC */}
-      <section className="max-w-7xl mx-auto px-6 -mt-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {/* Stats Grid - Clean, Professional, Data-Focused */}
+      <section className="max-w-7xl mx-auto px-6 -mt-12 md:-mt-16 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, idx) => (
-            <div
+            <StatCard
               key={idx}
-              className={`bg-gradient-to-br ${stat.gradient} rounded-3xl p-8 shadow-tiger-2xl hover:shadow-tiger-xl hover:-translate-y-4 hover:scale-105 transition-all text-white relative overflow-hidden group cursor-pointer`}
-            >
-              {/* Emoji background decoration */}
-              <div className="absolute top-0 right-0 text-7xl opacity-20 group-hover:opacity-30 group-hover:scale-125 transition-all">
-                {stat.emoji}
-              </div>
-
-              <stat.icon className="w-12 h-12 mb-4 relative z-10 group-hover:scale-110 transition-transform" />
-              <div className="text-5xl md:text-6xl font-black relative z-10 mb-2">
-                {stat.value}
-              </div>
-              <div className="text-sm md:text-base font-bold opacity-90 relative z-10 uppercase tracking-wide">
-                {stat.label}
-              </div>
-            </div>
+              icon={stat.icon}
+              label={stat.label}
+              value={stat.value}
+              subtext={stat.subtext}
+              trend={stat.trend}
+              trendValue={stat.trendValue}
+              color={stat.color}
+            />
           ))}
         </div>
       </section>
 
-      {/* 🏆 RECENT HIGHLIGHTS - DRAMATIC */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="bg-gradient-to-br from-willard-grey-900 to-willard-black rounded-3xl p-10 md:p-12 text-white shadow-tiger-2xl relative overflow-hidden">
-          {/* Decorative elements */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="text-[200px] absolute top-4 right-4 rotate-12">🎳</div>
-            <div className="text-[200px] absolute bottom-4 left-4 -rotate-12">🎯</div>
-          </div>
+      {/* Recent Highlights - Storytelling, Emotional Connection */}
+      <section className="max-w-7xl mx-auto px-6 py-16 md:py-20">
+        <div className="mb-8">
+          <h2 className="text-4xl md:text-5xl font-black text-tiger-primary-black mb-3">
+            Recent Highlights
+          </h2>
+          <p className="text-lg text-tiger-neutral-600">
+            Celebrating our team's achievements and milestones
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {highlights.map((highlight, idx) => (
+            <div
+              key={idx}
+              className="bg-white rounded-2xl shadow-tiger-lg hover:shadow-tiger-xl transition-all p-6 md:p-8 group cursor-pointer border-2 border-transparent hover:border-tiger-neutral-200"
+            >
+              <div className="flex items-start gap-4">
+                <div className={`flex-shrink-0 p-4 rounded-xl bg-gradient-to-br ${highlight.color} group-hover:scale-110 transition-transform`}>
+                  <highlight.icon className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-2xl md:text-3xl font-black text-tiger-primary-black">
+                      {highlight.title}
+                    </h3>
+                  </div>
+                  <p className="text-base md:text-lg text-tiger-neutral-700 leading-relaxed mb-3">
+                    {highlight.description}
+                  </p>
+                  <p className="text-sm text-tiger-neutral-500 font-medium">
+                    {highlight.date}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 text-center">
+          <Button
+            variant="ghost"
+            size="lg"
+            icon={ChevronRight}
+            iconPosition="right"
+            onClick={() => navigate('/schedule')}
+          >
+            View Full Schedule
+          </Button>
+        </div>
+      </section>
+
+      {/* Upcoming Match - Creates Urgency and Community */}
+      <section className="max-w-7xl mx-auto px-6 pb-16 md:pb-20">
+        <div className="bg-gradient-to-br from-tiger-neutral-900 to-tiger-primary-black rounded-3xl p-8 md:p-12 text-white shadow-tiger-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full -ml-48 -mb-48" />
 
           <div className="relative z-10">
-            <div className="flex items-center gap-4 mb-8">
-              <Star className="w-12 h-12 animate-pulse" />
-              <h2 className="text-5xl md:text-6xl font-black">
-                RECENT HIGHLIGHTS
+            <div className="flex items-center gap-3 mb-6">
+              <Calendar className="w-8 h-8" />
+              <h2 className="text-3xl md:text-4xl font-black">
+                Next Match
               </h2>
             </div>
 
-            <div className="space-y-6">
-              <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-8 shadow-tiger-lg hover:shadow-tiger-xl hover:scale-105 transition-all group">
-                <div className="flex items-center gap-6">
-                  <div className="text-8xl group-hover:scale-125 transition-transform">🏆</div>
-                  <div>
-                    <div className="font-black text-3xl md:text-4xl mb-2">
-                      DISTRICT CHAMPIONS!
-                    </div>
-                    <div className="opacity-90 text-xl md:text-2xl font-semibold">
-                      Team posted a season-high 4,012 pins 🔥
-                    </div>
-                  </div>
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <div className="text-lg opacity-90 mb-2">Friday, March 15th at 3:30 PM</div>
+                <div className="text-3xl md:text-4xl font-black mb-4">
+                  vs. Springfield Central
+                </div>
+                <div className="text-lg opacity-90">
+                  Willard Lanes • Home Match
                 </div>
               </div>
 
-              <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-8 shadow-tiger-lg hover:shadow-tiger-xl hover:scale-105 transition-all group">
-                <div className="flex items-center gap-6">
-                  <div className="text-8xl group-hover:scale-125 transition-transform">🎯</div>
-                  <div>
-                    <div className="font-black text-3xl md:text-4xl mb-2">
-                      NEAR PERFECT GAME!
-                    </div>
-                    <div className="opacity-90 text-xl md:text-2xl font-semibold">
-                      Alex Johnson bowled a 289 at Regionals ⚡
-                    </div>
-                  </div>
-                </div>
+              <div className="flex flex-col gap-3">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  icon={Star}
+                  onClick={() => navigate('/roster')}
+                  className="bg-white text-tiger-primary-black hover:bg-tiger-neutral-100"
+                >
+                  View Team Roster
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  fullWidth
+                  onClick={() => navigate('/stats')}
+                  className="border-white text-white hover:bg-white hover:text-tiger-primary-black"
+                >
+                  Check Team Stats
+                </Button>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ⚡ CALL TO ACTION - ELECTRIC */}
+      {/* Call to Action - Final Conversion Push */}
       <section className="max-w-7xl mx-auto px-6 pb-20">
-        <div className="bg-gradient-to-r from-willard-black via-willard-grey-900 to-willard-grey-800 rounded-3xl p-12 md:p-16 text-center text-white shadow-tiger-2xl relative overflow-hidden group">
-          {/* Animated background elements */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-1/2 left-1/4 text-9xl animate-float-slow">🎳</div>
-            <div className="absolute top-1/4 right-1/4 text-9xl animate-float">⚡</div>
-          </div>
-
-          <div className="relative z-10">
-            <h3 className="text-5xl md:text-6xl font-black mb-6">
-              READY TO STRIKE? 🎳
-            </h3>
-            <p className="text-2xl md:text-3xl mb-10 opacity-90 font-bold max-w-3xl mx-auto">
-              Practice starts every Monday & Wednesday at 3:30 PM
-            </p>
-            <button
-              onClick={() => window.location.href = '/contact'}
-              className="bg-white text-willard-black px-12 py-6 rounded-full font-black text-xl hover:bg-willard-grey-100 hover:scale-110 transition-all inline-flex items-center gap-4 shadow-tiger-xl"
-            >
-              Learn More
-              <ChevronRight className="w-7 h-7" />
-            </button>
-          </div>
+        <div className="bg-gradient-to-r from-tiger-tiger-darkRed to-red-700 rounded-3xl p-12 md:p-16 text-center text-white shadow-tiger-2xl">
+          <h3 className="text-4xl md:text-5xl font-black mb-4">
+            Ready to Roll?
+          </h3>
+          <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-2xl mx-auto">
+            Practice starts every Monday & Wednesday at 3:30 PM.
+            New members are always welcome!
+          </p>
+          <Button
+            variant="primary"
+            size="xl"
+            icon={ChevronRight}
+            iconPosition="right"
+            onClick={() => navigate('/contact')}
+            className="bg-white text-tiger-tiger-darkRed hover:bg-tiger-neutral-100"
+          >
+            Get Started Today
+          </Button>
         </div>
       </section>
     </div>
