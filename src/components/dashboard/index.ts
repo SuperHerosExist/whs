@@ -9,3 +9,5 @@ export type { QuickActionsProps, QuickAction } from './QuickActions';
 
 export { PlayerTable } from './PlayerTable';
 export type { PlayerTableProps } from './PlayerTable';
+
+export { Settings } from './Settings';

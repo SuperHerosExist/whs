@@ -10,7 +10,8 @@ import {
   BarChart3,
   AlertCircle,
   Trophy,
-  Target
+  Target,
+  Settings as SettingsIcon
 } from 'lucide-react';
 import {
   Button,
@@ -23,9 +24,9 @@ import {
   SyncIndicator,
   type DataPoint
 } from '@/components/ui';
-import { PlayerTable, QuickActions, type QuickAction } from '@/components/dashboard';
+import { PlayerTable, QuickActions, Settings, type QuickAction } from '@/components/dashboard';
 
-type TabId = 'overview' | 'roster' | 'schedule' | 'analytics';
+type TabId = 'overview' | 'roster' | 'schedule' | 'analytics' | 'settings';
 
 export const CoachDashboard: React.FC = () => {
   const { showToast } = useToast();
@@ -167,6 +168,7 @@ export const CoachDashboard: React.FC = () => {
     { id: 'roster' as TabId, label: 'Roster', icon: Users, badge: teamStats.activePlayers.toString() },
     { id: 'schedule' as TabId, label: 'Schedule', icon: Calendar },
     { id: 'analytics' as TabId, label: 'Analytics', icon: TrendingUp },
+    { id: 'settings' as TabId, label: 'Settings', icon: SettingsIcon },
   ];
 
   if (loading) {
@@ -537,6 +539,13 @@ export const CoachDashboard: React.FC = () => {
                 Access detailed analytics including frame-by-frame analysis, player comparisons, match history, and predictive modeling in the advanced stats application.
               </p>
             </Card>
+          </div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <div>
+            <Settings />
           </div>
         )}
       </div>
