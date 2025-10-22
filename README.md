@@ -14,15 +14,24 @@ A world-class, production-ready website for the Willard High School Tigers Bowli
 - **Home Page**: Hero section, team stats, recent highlights
 - **About Page**: Program mission, core values, history
 - **Roster Page**: Filterable team roster with player profiles
+- **Meet the Team**: Public player profiles with stats, bios, photos, and achievements
 - **Schedule Page**: Upcoming events and past results
 - **Stats Page**: Team statistics with integration to detailed Stats app
 - **Contact Page**: Join team inquiry form with Firestore integration
 
 ### Player Portal
-- **Profile Management**: Edit personal information, bio, graduation year
+- **Profile Claiming**: New players can claim their bowling profile on first login
+- **Profile Management**: Edit bio, hometown, favorite quote, bowling goals, jersey number
 - **Photo Upload**: Upload and manage profile photo (5MB limit, Firebase Storage)
-- **Statistics Dashboard**: View personal bowling statistics
+- **Statistics Dashboard**: View personal bowling statistics (auto-synced from Stats app)
 - **Direct Stats App Access**: One-click access to detailed analytics
+
+### Stats Integration (NEW!)
+- **Automated Stats Sync**: Cloud Functions sync stats from bowling Stats app daily
+- **Public Stats API**: Read-only public stats endpoint (no auth required)
+- **Team Statistics**: Team average, total games, top players
+- **Recent High Games**: Last 30 days of top performances
+- **Player Stats**: Individual averages, high games, high series (read-only)
 
 ### Coach/Admin Portal
 - **Roster Management**: Add, edit, activate/deactivate players
@@ -30,6 +39,7 @@ A world-class, production-ready website for the Willard High School Tigers Bowli
 - **Schedule Management**: Manage events and tournaments
 - **Player Profile Management**: Full access to all player data
 - **Photo Gallery Management**: Upload and manage team photos
+- **Achievement Management**: Add player achievements and accolades
 
 ### Security & Compliance
 - **Role-Based Access Control**: Public, Player, and Coach roles
@@ -42,7 +52,8 @@ A world-class, production-ready website for the Willard High School Tigers Bowli
 
 - **Frontend**: React 19 + TypeScript + Vite
 - **Styling**: TailwindCSS (mobile-first, professional branding)
-- **Backend**: Firebase (Auth, Firestore, Storage, Hosting)
+- **Backend**: Firebase (Auth, Firestore, Storage, Hosting, Cloud Functions)
+- **Cloud Functions**: Node.js 20 with TypeScript (stats aggregation, scheduled tasks)
 - **Routing**: React Router v6
 - **Icons**: Lucide React
 - **Date Handling**: date-fns
@@ -91,9 +102,16 @@ A world-class, production-ready website for the Willard High School Tigers Bowli
    firebase use --add  # Select your project
    ```
 
-5. **Deploy Security Rules**:
+5. **Install Cloud Functions Dependencies**:
    ```bash
-   firebase deploy --only firestore:rules,firestore:indexes,storage:rules
+   cd functions
+   npm install
+   cd ..
+   ```
+
+6. **Deploy Security Rules and Functions**:
+   ```bash
+   firebase deploy --only firestore:rules,firestore:indexes,storage:rules,functions
    ```
 
 ### Development
@@ -164,6 +182,10 @@ WHS/
 ├── src/
 │   ├── components/
 │   │   ├── auth/            # Authentication components
+│   │   │   ├── SignIn.tsx
+│   │   │   ├── SignUp.tsx
+│   │   │   ├── ProtectedRoute.tsx
+│   │   │   └── ProfileClaiming.tsx  # NEW: Profile claiming flow
 │   │   └── layout/          # Header, Footer, Navigation
 │   ├── config/              # Branding and configuration
 │   ├── contexts/            # React contexts (Auth)
@@ -172,15 +194,22 @@ WHS/
 │   │   ├── Home.tsx
 │   │   ├── About.tsx
 │   │   ├── Roster.tsx
+│   │   ├── Team.tsx         # NEW: Meet the Team page (public)
 │   │   ├── Schedule.tsx
 │   │   ├── Stats.tsx
 │   │   ├── Contact.tsx
 │   │   ├── PlayerDashboard.tsx
+│   │   ├── PlayerProfile.tsx  # NEW: Player profile management
 │   │   └── CoachDashboard.tsx
 │   ├── types/               # TypeScript type definitions
 │   ├── App.tsx              # Main app component with routing
 │   ├── main.tsx             # App entry point
 │   └── index.css            # Global styles
+├── functions/               # NEW: Cloud Functions
+│   ├── src/
+│   │   └── index.ts         # Stats aggregation functions
+│   ├── package.json
+│   └── tsconfig.json
 ├── firestore.rules          # Firestore security rules
 ├── firestore.indexes.json   # Firestore indexes
 ├── storage.rules            # Cloud Storage security rules
@@ -190,6 +219,8 @@ WHS/
 ├── tsconfig.json
 ├── vite.config.ts
 ├── tailwind.config.js
+├── STATS_INTEGRATION_IMPLEMENTATION.md  # NEW: Stats integration guide
+├── PLAYER_PROFILES_GUIDE.md            # NEW: Player profiles guide
 └── README.md
 ```
 
@@ -216,13 +247,25 @@ GCP infrastructure is defined in `infrastructure.json`:
 
 ## Stats App Integration
 
-See [STATS_APP_INTEGRATION.md](./STATS_APP_INTEGRATION.md) for detailed integration guide.
+The site automatically syncs bowling statistics from a separate Stats app using Cloud Functions.
+
+**See Detailed Guides**:
+- [STATS_INTEGRATION_IMPLEMENTATION.md](./STATS_INTEGRATION_IMPLEMENTATION.md) - Complete stats integration guide
+- [PLAYER_PROFILES_GUIDE.md](./PLAYER_PROFILES_GUIDE.md) - Player profile system guide
+- [STATS_APP_INTEGRATION.md](./STATS_APP_INTEGRATION.md) - Original integration options
+
+**Features**:
+- **Automated Daily Sync**: Cloud Function runs at 2 AM daily to aggregate stats
+- **Public Stats API**: No authentication required for public team stats
+- **Read-Only Stats**: Stats are synced from Stats app, cannot be edited on website
+- **Real-time Display**: Player profiles show current averages, high games, high series
 
 **Quick Start**:
 1. Use the same Firebase project for both apps
-2. Deploy security rules that support both apps
-3. Configure `VITE_STATS_APP_URL` in `.env`
-4. Link to Stats app from player/coach dashboards
+2. Deploy Cloud Functions: `firebase deploy --only functions`
+3. Deploy security rules: `firebase deploy --only firestore:rules`
+4. Stats automatically sync daily at 2 AM
+5. Manual trigger: `curl -X POST https://us-central1-[PROJECT].cloudfunctions.net/triggerPublicStatsUpdate`
 
 ## User Roles
 
@@ -277,9 +320,10 @@ See [STATS_APP_INTEGRATION.md](./STATS_APP_INTEGRATION.md) for detailed integrat
 - Created on signup
 
 **players**: Extended player profiles
-- Personal info, grade, graduation year, jersey number, bio
-- Statistics (average, high game, games played)
-- Photo URL
+- Personal info, grade, graduation year, jersey number
+- Editable fields: bio, hometown, favorite quote, bowling goals
+- Statistics (average, high game, high series, games played) - READ ONLY
+- Photo URL, isClaimed flag
 
 **teams**: Team rosters
 - Team name, active players, alternates, season
@@ -295,6 +339,17 @@ See [STATS_APP_INTEGRATION.md](./STATS_APP_INTEGRATION.md) for detailed integrat
 
 **contactSubmissions**: Contact form inquiries
 - Name, email, phone, subject, message, status
+
+**achievements**: Player achievements and accolades
+- Player ID, title, description, value, date
+- Type: high-game, improvement, milestone, award
+- isPublic flag (display on team page)
+
+**publicStats**: Aggregated public statistics (updated daily)
+- Team average, total games
+- Top players (top 10 by average)
+- Recent high games (last 30 days)
+- Updated by Cloud Functions
 
 **games, sessions, frames**: Stats app integration (read-only)
 
