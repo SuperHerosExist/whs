@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Users, Target, TrendingUp, ChevronRight, Zap, Star, Calendar, Flame, Award } from 'lucide-react';
+import { Trophy, Users, Target, TrendingUp, ChevronRight, Zap, Star, Calendar } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { statsDb, STATS_TEAM_ID } from '@/lib/statsFirebase';
 import { practiceSchedule } from '@/config/practice-schedule';
@@ -98,7 +98,7 @@ export const Home: React.FC = () => {
           </div>
 
           {/* Subheading - WITH EXTRA SPACING */}
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-12 leading-tight max-w-4xl mx-auto animate-slide-up" style={{animationDelay: '0.3s'">
+          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-12 leading-tight max-w-4xl mx-auto animate-slide-up" style={{animationDelay: '0.3s'}}>
             STRIKE YOUR WAY<br />TO VICTORY
           </h2>
 
