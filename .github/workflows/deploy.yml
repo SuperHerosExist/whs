@@ -66,21 +66,9 @@ jobs:
           path: dist/
 
       - name: Deploy to Firebase Hosting
-        uses: w9jds/firebase-action@master
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-
-      - name: Comment deployment URL
-        if: success()
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '✅ Deployment successful! View at: https://${{ secrets.VITE_FIREBASE_PROJECT_ID }}.web.app'
-            })
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_WILLARD_TIGERS_BOWLING }}'
+          channelId: live
+          projectId: willard-tigers-bowling
