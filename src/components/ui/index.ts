@@ -20,3 +20,6 @@ export type { AchievementProps, AchievementData, AchievementCelebrationProps } f
 
 export { SyncIndicator } from './SyncIndicator';
 export type { SyncIndicatorProps } from './SyncIndicator';
+
+export { Tabs } from './Tabs';
+export type { TabsProps, Tab } from './Tabs';
