@@ -172,6 +172,18 @@ service cloud.firestore {
     }
 
     // ========================================
+    // Public Stats Collection
+    // (World-readable aggregated stats for public display)
+    // ========================================
+    match /publicStats/{programId} {
+      // Anyone can read public stats (no auth required)
+      allow read: true;
+
+      // Only Cloud Functions can write (via Admin SDK)
+      allow write: if false;
+    }
+
+    // ========================================
     // Deny all other reads/writes
     // ========================================
     match /{document=**} {
