@@ -18,7 +18,7 @@ export const Home: React.FC = () => {
   const { highlights, loading: highlightsLoading } = useRecentHighlights(4);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 via-white to-tiger-neutral-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black">
 
       {/* Hero Section - Sleek, Futuristic, Cutting-Edge */}
       <section className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white overflow-hidden">
@@ -141,63 +141,69 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Recent Highlights - Enhanced Visual Design */}
-      <section className="max-w-7xl mx-auto px-4 py-12 md:py-16 lg:py-24">
-        <div className="mb-10 md:mb-14 text-center">
+      {/* Recent Highlights - Sleek Glassmorphism Design */}
+      <section className="relative max-w-7xl mx-auto px-4 py-12 md:py-16 lg:py-24 overflow-hidden">
+        {/* Subtle background elements */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-br from-tiger-tiger-gold to-yellow-600 rounded-full blur-3xl animate-pulse delay-1000" />
+        </div>
+
+        <div className="relative mb-10 md:mb-14 text-center">
           <div className="inline-flex items-center justify-center gap-3 mb-5">
             <div className="w-12 h-1 bg-gradient-to-r from-transparent via-tiger-tiger-gold to-transparent" />
-            <Award className="w-10 h-10 md:w-12 md:h-12 text-tiger-tiger-gold animate-pulse" />
+            <Award className="w-10 h-10 md:w-12 md:h-12 text-tiger-tiger-gold animate-pulse drop-shadow-[0_0_10px_rgba(212,175,55,0.6)]" />
             <div className="w-12 h-1 bg-gradient-to-r from-transparent via-tiger-tiger-gold to-transparent" />
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-tiger-primary-black mb-4 tracking-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-300 bg-clip-text text-transparent">
             Recent Highlights
           </h2>
-          <p className="text-base md:text-lg lg:text-xl text-tiger-neutral-600 font-semibold max-w-2xl mx-auto">
+          <p className="text-base md:text-lg lg:text-xl text-slate-400 font-semibold max-w-2xl mx-auto">
             Celebrating our team's achievements and milestones
           </p>
         </div>
 
         {highlightsLoading ? (
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+          <div className="relative grid md:grid-cols-2 gap-4 md:gap-6">
             {[1, 2].map(i => (
-              <div key={i} className="bg-white rounded-2xl shadow-xl p-6 md:p-8 animate-pulse">
+              <div key={i} className="bg-white/5 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-xl p-6 md:p-8 animate-pulse">
                 <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 bg-tiger-neutral-200 rounded-2xl" />
+                  <div className="w-16 h-16 bg-slate-700 rounded-2xl" />
                   <div className="flex-1 space-y-3">
-                    <div className="h-6 bg-tiger-neutral-200 rounded w-3/4" />
-                    <div className="h-4 bg-tiger-neutral-100 rounded w-full" />
-                    <div className="h-4 bg-tiger-neutral-100 rounded w-2/3" />
+                    <div className="h-6 bg-slate-700 rounded w-3/4" />
+                    <div className="h-4 bg-slate-800 rounded w-full" />
+                    <div className="h-4 bg-slate-800 rounded w-2/3" />
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+          <div className="relative grid md:grid-cols-2 gap-4 md:gap-6">
             {highlights.map((highlight) => {
               const IconComponent = iconMap[highlight.icon];
               return (
                 <div
                   key={highlight.id}
-                  className="relative group bg-white rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all p-6 md:p-8 cursor-pointer border-2 border-transparent hover:border-tiger-tiger-gold overflow-hidden"
+                  className="relative group bg-white/5 backdrop-blur-xl border border-slate-700 hover:border-tiger-tiger-gold rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all p-6 md:p-8 cursor-pointer overflow-hidden hover:bg-white/10"
                 >
-                  {/* Background gradient on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${highlight.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
+                  {/* Background gradient glow on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-tiger-tiger-gold/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                   <div className="relative flex items-start gap-4">
                     <div className={`flex-shrink-0 p-4 md:p-5 rounded-2xl bg-gradient-to-br ${highlight.color} group-hover:scale-110 transition-transform shadow-lg`}>
                       <IconComponent className="w-7 h-7 md:w-9 md:h-9 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-tiger-primary-black mb-3 group-hover:text-tiger-tiger-darkRed transition-colors">
+                      <h3 className="text-xl md:text-2xl lg:text-3xl font-black mb-3 group-hover:text-tiger-tiger-gold transition-colors bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">
                         {highlight.title}
                       </h3>
-                      <p className="text-sm md:text-base lg:text-lg text-tiger-neutral-700 leading-relaxed mb-3">
+                      <p className="text-sm md:text-base lg:text-lg text-slate-300 leading-relaxed mb-3">
                         {highlight.description}
                       </p>
                       <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-tiger-tiger-gold rounded-full" />
-                        <p className="text-xs md:text-sm text-tiger-neutral-500 font-semibold">
+                        <p className="text-xs md:text-sm text-slate-500 font-semibold">
                           {highlight.date}
                         </p>
                       </div>
@@ -209,14 +215,14 @@ export const Home: React.FC = () => {
           </div>
         )}
 
-        <div className="mt-8 md:mt-10 flex justify-center">
+        <div className="relative mt-8 md:mt-10 flex justify-center">
           <Button
             variant="ghost"
             size="lg"
             icon={ChevronRight}
             iconPosition="right"
             onClick={() => navigate('/schedule')}
-            className="text-base md:text-lg font-bold"
+            className="text-base md:text-lg font-bold text-slate-300 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-slate-700 hover:border-tiger-tiger-gold transition-all"
           >
             View Full Schedule
           </Button>
