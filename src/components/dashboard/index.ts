@@ -6,3 +6,6 @@ export type { WelcomeBannerProps } from './WelcomeBanner';
 
 export { QuickActions } from './QuickActions';
 export type { QuickActionsProps, QuickAction } from './QuickActions';
+
+export { PlayerTable } from './PlayerTable';
+export type { PlayerTableProps } from './PlayerTable';
