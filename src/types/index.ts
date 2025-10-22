@@ -32,14 +32,20 @@ export interface Player {
   graduationYear: number;
   jerseyNumber?: string;
   bio?: string;
+  hometown?: string;
+  favoriteQuote?: string;
+  bowlingGoals?: string;
 
   // Stats (synced from Stats app)
   averageScore: number;
+  average: number; // Alias for averageScore
   highGame: number;
+  highSeries: number;
   gamesPlayed: number;
 
-  // Profile management
+  // Profile status
   isActive: boolean;
+  isClaimed: boolean; // Has a user claimed this profile?
   createdAt: Date;
   updatedAt: Date;
 }
@@ -169,6 +175,31 @@ export interface PlayerStats {
   strikePercentage: number;
   sparePercentage: number;
   firstBallAverage: number;
+}
+
+// Public Stats (from Cloud Functions)
+export interface PublicStats {
+  programId: string;
+  teamAverage: number;
+  totalGames: number;
+  topPlayers: PublicPlayerStats[];
+  recentHighGames: RecentHighGame[];
+  updatedAt: Date;
+}
+
+export interface PublicPlayerStats {
+  name: string;
+  average: number;
+  highGame: number;
+  highSeries: number;
+  accolades?: string[];
+  achievements?: string[];
+}
+
+export interface RecentHighGame {
+  playerName: string;
+  score: number;
+  date: string;
 }
 
 // Navigation

@@ -57,8 +57,10 @@ service cloud.firestore {
     // ========================================
     match /players/{playerId} {
       // Players can read their own profile, coaches can read all players in their program
+      // Public can read active players for team page
       allow read: if isOwner(playerId) ||
-                     (isCoach() && belongsToProgram(resource.data.programId));
+                     (isCoach() && belongsToProgram(resource.data.programId)) ||
+                     (resource.data.isActive == true);
 
       // Coaches can create player profiles
       allow create: if isCoach() &&
@@ -66,9 +68,12 @@ service cloud.firestore {
                       request.resource.data.keys().hasAll(['uid', 'name', 'email', 'programId', 'isActive']);
 
       // Players can update their own profile (limited fields)
+      // Allowed fields: bio, hometown, favoriteQuote, bowlingGoals, jerseyNumber, photoURL, isClaimed
+      // NOT allowed: uid, programId, averageScore, average, highGame, highSeries, gamesPlayed, isActive, name, email
       // Coaches can update any player in their program
       allow update: if (isOwner(playerId) &&
-                         (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'programId', 'averageScore', 'highGame', 'gamesPlayed']))) ||
+                         (!request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['uid', 'programId', 'averageScore', 'average', 'highGame', 'highSeries', 'gamesPlayed', 'isActive', 'name', 'email']))) ||
                        (isCoach() && belongsToProgram(resource.data.programId));
 
       // Only coaches can delete/deactivate players

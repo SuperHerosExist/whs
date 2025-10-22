@@ -12,6 +12,7 @@ import { SignUp } from '@/components/auth/SignUp';
 import { Home } from '@/pages/Home';
 import { About } from '@/pages/About';
 import { Roster } from '@/pages/Roster';
+import { Team } from '@/pages/Team';
 import { Schedule } from '@/pages/Schedule';
 import { Stats } from '@/pages/Stats';
 import { Contact } from '@/pages/Contact';
@@ -19,6 +20,7 @@ import { Contact } from '@/pages/Contact';
 // Protected pages
 import { PlayerDashboard } from '@/pages/PlayerDashboard';
 import { CoachDashboard } from '@/pages/CoachDashboard';
+import { PlayerProfile } from '@/pages/PlayerProfile';
 
 function App() {
   return (
@@ -32,6 +34,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/roster" element={<Roster />} />
+              <Route path="/team" element={<Team />} />
               <Route path="/schedule" element={<Schedule />} />
               <Route path="/stats" element={<Stats />} />
               <Route path="/contact" element={<Contact />} />
@@ -46,6 +49,14 @@ function App() {
                 element={
                   <ProtectedRoute requiredRole="player">
                     <PlayerDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/player/profile"
+                element={
+                  <ProtectedRoute requiredRole="player">
+                    <PlayerProfile />
                   </ProtectedRoute>
                 }
               />
