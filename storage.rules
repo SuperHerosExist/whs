@@ -30,8 +30,8 @@ service firebase.storage {
       allow create, update: if (isAuthenticated() && request.auth.uid == userId && isValidImageFile()) ||
                                (isCoach() && isValidImageFile());
 
-      // Players can read their own photos, coaches can read all, public can read if referenced in published content
-      allow read: if isAuthenticated() || isCoach();
+      // Public read for roster display
+      allow read: if true;
 
       // Players can delete their own photos, coaches can delete any
       allow delete: if (isAuthenticated() && request.auth.uid == userId) || isCoach();

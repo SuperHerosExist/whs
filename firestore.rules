@@ -56,23 +56,26 @@ service cloud.firestore {
     // Players Collection
     // ========================================
     match /players/{playerId} {
-      // Players can read their own profile, coaches can read all players in their program
-      allow read: if isOwner(playerId) ||
-                     (isCoach() && belongsToProgram(resource.data.programId));
+      // Public read for website roster display
+      // Players can read their own profile
+      // Coaches can read all players in their program
+      allow read: if true;
 
+      // Players can create their own profile
       // Coaches can create player profiles
-      allow create: if isCoach() &&
-                      request.resource.data.programId == 'willard-tigers' &&
-                      request.resource.data.keys().hasAll(['uid', 'name', 'email', 'programId', 'isActive']);
+      allow create: if isAuthenticated() &&
+                      (playerId == request.auth.uid ||
+                       (isCoach() && request.resource.data.programId == 'willard-tigers'));
 
-      // Players can update their own profile (limited fields)
+      // Players can update their own profile (limited fields - cannot change stats)
       // Coaches can update any player in their program
-      allow update: if (isOwner(playerId) &&
-                         (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'programId', 'averageScore', 'highGame', 'gamesPlayed']))) ||
-                       (isCoach() && belongsToProgram(resource.data.programId));
+      allow update: if isAuthenticated() &&
+                      (playerId == request.auth.uid &&
+                       (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'programId', 'averageScore', 'highGame', 'gamesPlayed', 'teamIds']))) ||
+                       isCoach();
 
       // Only coaches can delete/deactivate players
-      allow delete: if isCoach() && belongsToProgram(resource.data.programId);
+      allow delete: if isCoach();
     }
 
     // ========================================
