@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { statsDb, STATS_TEAM_ID } from '@/lib/statsFirebase';
-import { getAllPlayerStats } from '@/lib/statsCalculator';
+import { getAllPlayerStats, type PlayerGameStats } from '@/lib/statsCalculator';
 import type { Player } from '@/types';
-import { Users, ChevronRight, LayoutGrid, List, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Users, ChevronRight, LayoutGrid, List, ArrowUpDown, ArrowUp, ArrowDown, Medal } from 'lucide-react';
 // import { WillardLogo } from '@/components/WillardLogo';
 
 type ViewMode = 'grid' | 'table';
@@ -14,6 +14,7 @@ export const Roster: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [playerStatsMap, setPlayerStatsMap] = useState<Map<string, PlayerGameStats>>(new Map());
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [sortField, setSortField] = useState<SortField>('average');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -24,11 +25,12 @@ export const Roster: React.FC = () => {
         // Fetch calculated stats to supplement player data
         const calculatedStats = await getAllPlayerStats();
         console.log('📊 Calculated stats received:', calculatedStats);
-        const statsMap = new Map();
+        const statsMap = new Map<string, PlayerGameStats>();
         calculatedStats.forEach(stat => {
           console.log(`   Player ${stat.playerName}: avg=${stat.average}, high=${stat.highGame}, games=${stat.games}`);
           statsMap.set(stat.playerId, stat);
         });
+        setPlayerStatsMap(statsMap);
 
         // First, get the team document to access playerIds array
         const teamRef = doc(statsDb, 'teams', STATS_TEAM_ID);
@@ -432,6 +434,51 @@ export const Roster: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* USBC Youth Achievements */}
+              {(() => {
+                const playerStats = playerStatsMap.get(selectedPlayer.id);
+                if (!playerStats) return null;
+
+                const totalBronze = playerStats.gamesOver25 + playerStats.seriesOver25;
+                const totalSilver = playerStats.gamesOver50 + playerStats.seriesOver50;
+                const totalGold = playerStats.gamesOver100 + playerStats.seriesOver100;
+                const totalAchievements = totalBronze + totalSilver + totalGold;
+
+                if (totalAchievements === 0) return null;
+
+                return (
+                  <div className="mb-8 p-6 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Medal className="w-5 h-5 text-purple-600" />
+                      <h3 className="text-lg font-black text-willard-black">USBC Youth Achievements</h3>
+                    </div>
+                    <p className="text-sm text-willard-grey-600 mb-4">
+                      Games and series scoring significantly above average
+                    </p>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                        <div className="text-3xl mb-2">🥉</div>
+                        <div className="text-2xl font-black text-amber-700 mb-1">{totalBronze}</div>
+                        <div className="text-xs text-willard-grey-600 font-semibold">Bronze Goals</div>
+                        <div className="text-xs text-willard-grey-500 mt-1">+25 over avg</div>
+                      </div>
+                      <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                        <div className="text-3xl mb-2">🥈</div>
+                        <div className="text-2xl font-black text-gray-600 mb-1">{totalSilver}</div>
+                        <div className="text-xs text-willard-grey-600 font-semibold">Silver Goals</div>
+                        <div className="text-xs text-willard-grey-500 mt-1">+50 over avg</div>
+                      </div>
+                      <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                        <div className="text-3xl mb-2">🥇</div>
+                        <div className="text-2xl font-black text-yellow-600 mb-1">{totalGold}</div>
+                        <div className="text-xs text-willard-grey-600 font-semibold">Gold Goals</div>
+                        <div className="text-xs text-willard-grey-500 mt-1">+100 over avg</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {selectedPlayer.bio && (
                 <div className="mb-6">

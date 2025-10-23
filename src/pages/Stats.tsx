@@ -136,14 +136,22 @@ export const Stats: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-willard-grey-50 via-willard-white to-willard-grey-100">
       {/* Page Header */}
-      <section className="bg-tiger-primary-black text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="font-heading text-5xl md:text-6xl tracking-wider mb-6">TEAM STATISTICS
+      <section className="relative bg-black text-white py-16 overflow-hidden">
+        {/* ESPN Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black opacity-90" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="inline-block bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-4 py-1 rounded-full font-bold text-xs uppercase tracking-widest mb-4">
+            2024-2025 Season
+          </div>
+          <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-wider mb-4">
+            TEAM STATISTICS
           </h1>
-          <p className="text-xl text-tiger-neutral-300">
-            2024-2025 Season Performance
+          <p className="text-lg md:text-xl text-gray-300">
+            Performance Analytics & Achievement Tracking
           </p>
         </div>
       </section>
@@ -181,17 +189,20 @@ export const Stats: React.FC = () => {
       {/* 🔥 HYPE ZONE - Achievements & Records */}
       {teamStats.totalGames > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex items-center gap-3 mb-8">
+          <div className="flex items-center gap-3 mb-4">
             <Flame className="w-8 h-8 text-orange-500" />
             <h2 className="text-3xl font-display font-black text-tiger-primary-black">
               HYPE ZONE
             </h2>
           </div>
+          <p className="text-tiger-neutral-600 mb-8 max-w-3xl">
+            Track the team's hottest performances, USBC Youth achievements, and record-breaking series!
+          </p>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             {/* High Series Record */}
-            <div className="bg-gradient-to-br from-tiger-tiger-gold to-yellow-600 rounded-2xl shadow-tiger-lg p-6 text-tiger-primary-black">
-              <div className="flex items-center gap-3 mb-2">
+            <div className="bg-gradient-to-br from-tiger-tiger-gold to-yellow-600 rounded-2xl shadow-tiger-lg p-6 text-tiger-primary-black text-center">
+              <div className="flex items-center justify-center gap-3 mb-2">
                 <Trophy className="w-8 h-8" />
                 <h3 className="text-2xl font-display font-black">HIGH SERIES</h3>
               </div>
@@ -202,8 +213,8 @@ export const Stats: React.FC = () => {
             </div>
 
             {/* Total Achievements */}
-            <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl shadow-tiger-lg p-6 text-white">
-              <div className="flex items-center gap-3 mb-2">
+            <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl shadow-tiger-lg p-6 text-white text-center">
+              <div className="flex items-center justify-center gap-3 mb-2">
                 <Medal className="w-8 h-8" />
                 <h3 className="text-2xl font-display font-black">ACHIEVEMENTS</h3>
               </div>
@@ -211,6 +222,7 @@ export const Stats: React.FC = () => {
                 {teamStats.totalAchievements}
               </div>
               <p className="text-sm font-bold opacity-90">USBC Youth Goals Crushed</p>
+              <p className="text-xs mt-2 opacity-75">Games & series scoring 25+ pins over average</p>
             </div>
 
             {/* Hot Streaks */}
@@ -221,8 +233,8 @@ export const Stats: React.FC = () => {
               , allPlayerStats[0]);
 
               return (
-                <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-tiger-lg p-6 text-white">
-                  <div className="flex items-center gap-3 mb-2">
+                <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-tiger-lg p-6 text-white text-center">
+                  <div className="flex items-center justify-center gap-3 mb-2">
                     <Flame className="w-8 h-8" />
                     <h3 className="text-2xl font-display font-black">ON FIRE</h3>
                   </div>
@@ -232,8 +244,9 @@ export const Stats: React.FC = () => {
                   <p className="text-sm font-bold opacity-90">
                     {hotPlayers.length === 1 ? 'Bowler' : 'Bowlers'} on Hot Streaks
                   </p>
+                  <p className="text-xs mt-2 opacity-75">Bowling 3+ consecutive games above average</p>
                   {longestStreaker.longestStreak > 0 && (
-                    <p className="text-xs mt-2 opacity-75">
+                    <p className="text-xs mt-1 opacity-75 font-bold">
                       Record: {longestStreaker.longestStreak} games ({longestStreaker.playerName})
                     </p>
                   )}
@@ -243,10 +256,13 @@ export const Stats: React.FC = () => {
           </div>
 
           {/* USBC Youth Achievement Breakdown */}
-          <div className="bg-white rounded-2xl shadow-tiger-lg p-8">
-            <h3 className="text-2xl font-display font-black text-tiger-primary-black mb-6">
+          <div className="bg-white rounded-2xl shadow-tiger-lg p-8 mb-8">
+            <h3 className="text-2xl font-display font-black text-tiger-primary-black mb-2">
               USBC YOUTH ACHIEVEMENTS
             </h3>
+            <p className="text-tiger-neutral-600 mb-6 text-sm">
+              Official USBC Youth goals recognize bowlers who score significantly above their average in individual games or 3-game series.
+            </p>
             <div className="grid md:grid-cols-3 gap-6">
               {(() => {
                 const bronze = allPlayerStats.reduce((sum, p) => sum + p.gamesOver25 + p.seriesOver25, 0);
@@ -279,6 +295,73 @@ export const Stats: React.FC = () => {
                   </>
                 );
               })()}
+            </div>
+          </div>
+
+          {/* Detailed Achievement List by Player */}
+          <div className="bg-white rounded-2xl shadow-tiger-lg p-8">
+            <h3 className="text-2xl font-display font-black text-tiger-primary-black mb-6">
+              Achievement Leaders
+            </h3>
+            <div className="space-y-4">
+              {allPlayerStats
+                .filter(p => (p.gamesOver25 + p.seriesOver25 + p.gamesOver50 + p.seriesOver50 + p.gamesOver100 + p.seriesOver100) > 0)
+                .sort((a, b) => {
+                  const aTotal = a.gamesOver25 + a.seriesOver25 + a.gamesOver50 + a.seriesOver50 + a.gamesOver100 + a.seriesOver100;
+                  const bTotal = b.gamesOver25 + b.seriesOver25 + b.gamesOver50 + b.seriesOver50 + b.gamesOver100 + b.seriesOver100;
+                  return bTotal - aTotal;
+                })
+                .map((player, index) => {
+                  const totalBronze = player.gamesOver25 + player.seriesOver25;
+                  const totalSilver = player.gamesOver50 + player.seriesOver50;
+                  const totalGold = player.gamesOver100 + player.seriesOver100;
+                  const totalAchievements = totalBronze + totalSilver + totalGold;
+
+                  return (
+                    <div
+                      key={player.playerId}
+                      className="flex items-center justify-between p-4 bg-tiger-neutral-50 rounded-lg hover:bg-tiger-neutral-100 transition-colors"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-tiger-primary-black text-white font-display font-black">
+                          {index + 1}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-tiger-primary-black">{player.playerName}</h4>
+                          <p className="text-sm text-tiger-neutral-600">
+                            {totalAchievements} Total Achievement{totalAchievements !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-4">
+                        {totalBronze > 0 && (
+                          <div className="text-center">
+                            <div className="text-2xl">🥉</div>
+                            <div className="text-sm font-bold text-amber-700">{totalBronze}</div>
+                          </div>
+                        )}
+                        {totalSilver > 0 && (
+                          <div className="text-center">
+                            <div className="text-2xl">🥈</div>
+                            <div className="text-sm font-bold text-gray-600">{totalSilver}</div>
+                          </div>
+                        )}
+                        {totalGold > 0 && (
+                          <div className="text-center">
+                            <div className="text-2xl">🥇</div>
+                            <div className="text-sm font-bold text-tiger-tiger-gold">{totalGold}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              {allPlayerStats.filter(p => (p.gamesOver25 + p.seriesOver25 + p.gamesOver50 + p.seriesOver50 + p.gamesOver100 + p.seriesOver100) > 0).length === 0 && (
+                <div className="text-center py-8 text-tiger-neutral-600">
+                  <p>No achievements earned yet this season.</p>
+                  <p className="text-sm mt-2">Keep bowling above average to earn USBC Youth goals!</p>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -444,26 +527,36 @@ export const Stats: React.FC = () => {
 
       {/* Integration with Stats App */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="bg-gradient-to-r from-tiger-primary-black to-tiger-tiger-darkRed rounded-2xl p-8 md:p-12 text-white text-center">
-          <h2 className="text-3xl font-display font-black mb-4">
-            Detailed Statistics & Analytics
-          </h2>
-          <p className="text-lg text-tiger-neutral-300 mb-8 max-w-2xl mx-auto">
-            Access comprehensive bowling statistics, frame-by-frame analysis, and advanced performance metrics
-            through our dedicated Stats application.
-          </p>
-          <a
-            href={import.meta.env.VITE_STATS_APP_URL || '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center px-8 py-4 bg-tiger-tiger-gold text-tiger-primary-black font-bold rounded-lg hover:bg-opacity-90 transition-all shadow-tiger-lg"
-          >
-            <BarChart3 className="w-5 h-5 mr-2" />
-            View Advanced Stats
-          </a>
-          <p className="mt-4 text-sm text-tiger-neutral-400">
-            Requires player or coach login
-          </p>
+        <div className="bg-gradient-to-r from-willard-black via-willard-grey-900 to-willard-grey-800 rounded-2xl p-8 md:p-12 text-white text-center shadow-xl relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-1/2 left-1/4 text-8xl">📊</div>
+            <div className="absolute top-1/4 right-1/4 text-8xl">📈</div>
+          </div>
+
+          <div className="relative z-10">
+            <div className="inline-block bg-yellow-500 text-willard-black px-4 py-1 rounded-full text-xs font-black uppercase tracking-wide mb-4">
+              Advanced Analytics
+            </div>
+            <h2 className="text-3xl font-display font-black mb-4">
+              Detailed Statistics & Frame-by-Frame Analysis
+            </h2>
+            <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+              Access comprehensive bowling statistics, frame-by-frame analysis, and advanced performance metrics
+              through our dedicated Stats application.
+            </p>
+            <a
+              href={import.meta.env.VITE_STATS_APP_URL || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-willard-black font-bold rounded-full hover:from-yellow-400 hover:to-yellow-500 transition-all hover:scale-105 shadow-lg"
+            >
+              <BarChart3 className="w-5 h-5 mr-2" />
+              View Advanced Stats
+            </a>
+            <p className="mt-4 text-sm text-gray-400">
+              Requires player or coach login
+            </p>
+          </div>
         </div>
       </section>
     </div>
@@ -479,15 +572,18 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ icon: Icon, label, value, color }) => {
   return (
-    <div className="bg-white rounded-xl shadow-tiger-lg p-6 hover:shadow-xl transition-shadow">
-      <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${color} mb-4`}>
-        <Icon className="w-6 h-6 text-white" />
-      </div>
-      <div className="text-3xl font-display font-black text-tiger-primary-black mb-1">
-        {value}
-      </div>
-      <div className="text-sm font-semibold text-tiger-neutral-600">
-        {label}
+    <div className="bg-gradient-to-br from-willard-grey-900 to-willard-black rounded-xl shadow-lg p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 text-white relative overflow-hidden group">
+      <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-5 group-hover:opacity-10 transition-opacity`} />
+      <div className="relative z-10">
+        <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${color} mb-4`}>
+          <Icon className="w-6 h-6 text-white" />
+        </div>
+        <div className="text-3xl md:text-4xl font-display font-black mb-1">
+          {value}
+        </div>
+        <div className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+          {label}
+        </div>
       </div>
     </div>
   );
