@@ -3,13 +3,20 @@ import { doc, getDoc } from 'firebase/firestore';
 import { statsDb, STATS_TEAM_ID } from '@/lib/statsFirebase';
 import { getAllPlayerStats } from '@/lib/statsCalculator';
 import type { Player } from '@/types';
-import { Users, ChevronRight } from 'lucide-react';
+import { Users, ChevronRight, LayoutGrid, List, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 // import { WillardLogo } from '@/components/WillardLogo';
+
+type ViewMode = 'grid' | 'table';
+type SortField = 'name' | 'average' | 'highGame' | 'games';
+type SortDirection = 'asc' | 'desc';
 
 export const Roster: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [sortField, setSortField] = useState<SortField>('average');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -75,9 +82,6 @@ export const Roster: React.FC = () => {
           }
         }
 
-        // Sort by average score descending
-        playersData.sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
-
         setPlayers(playersData);
         console.log(`✅ Loaded ${playersData.length} players from Stats app (Team: ${STATS_TEAM_ID})`);
       } catch (error) {
@@ -89,6 +93,56 @@ export const Roster: React.FC = () => {
 
     fetchPlayers();
   }, []);
+
+  // Sorting function
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // New field, default to descending for stats, ascending for name
+      setSortField(field);
+      setSortDirection(field === 'name' ? 'asc' : 'desc');
+    }
+  };
+
+  // Get sorted players
+  const sortedPlayers = [...players].sort((a, b) => {
+    let aVal: string | number;
+    let bVal: string | number;
+
+    switch (sortField) {
+      case 'name':
+        aVal = a.name.toLowerCase();
+        bVal = b.name.toLowerCase();
+        break;
+      case 'average':
+        aVal = a.averageScore || 0;
+        bVal = b.averageScore || 0;
+        break;
+      case 'highGame':
+        aVal = a.highGame || 0;
+        bVal = b.highGame || 0;
+        break;
+      case 'games':
+        aVal = a.gamesPlayed || 0;
+        bVal = b.gamesPlayed || 0;
+        break;
+    }
+
+    if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const SortIcon: React.FC<{ field: SortField }> = ({ field }) => {
+    if (sortField !== field) return <ArrowUpDown className="w-4 h-4 opacity-40" />;
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="w-4 h-4" />
+    ) : (
+      <ArrowDown className="w-4 h-4" />
+    );
+  };
 
   if (loading) {
     return (
@@ -103,22 +157,50 @@ export const Roster: React.FC = () => {
       {/* 🏆 BOLD HEADER */}
       <section className="bg-gradient-to-br from-willard-black via-willard-grey-900 to-willard-grey-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center gap-6 mb-6">
-            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
-              <Users className="w-16 h-16" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-6">
+              <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
+                <Users className="w-16 h-16" />
+              </div>
+              <div>
+                <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-wider mb-8">TEAM ROSTER
+                </h1>
+                <p className="text-2xl md:text-3xl text-willard-grey-300 mt-2 font-bold">
+                  Meet our amazing bowlers 🎳
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-wider mb-8">TEAM ROSTER
-              </h1>
-              <p className="text-2xl md:text-3xl text-willard-grey-300 mt-2 font-bold">
-                Meet our amazing bowlers 🎳
-              </p>
+
+            {/* View Toggle */}
+            <div className="flex gap-2 bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-2">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-3 rounded-lg transition-all ${
+                  viewMode === 'grid'
+                    ? 'bg-white text-willard-black shadow-lg'
+                    : 'text-white hover:bg-white hover:bg-opacity-20'
+                }`}
+                title="Grid View"
+              >
+                <LayoutGrid className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`p-3 rounded-lg transition-all ${
+                  viewMode === 'table'
+                    ? 'bg-white text-willard-black shadow-lg'
+                    : 'text-white hover:bg-white hover:bg-opacity-20'
+                }`}
+                title="Table View"
+              >
+                <List className="w-5 h-5" />
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 👥 PLAYERS GRID */}
+      {/* 👥 PLAYERS SECTION */}
       <section className="max-w-7xl mx-auto px-6 py-16">
         {players.length === 0 ? (
           <div className="text-center py-20">
@@ -126,9 +208,107 @@ export const Roster: React.FC = () => {
             <p className="text-2xl text-willard-grey-600 font-bold">No players found</p>
             <p className="text-willard-grey-500 mt-2">Check back soon!</p>
           </div>
+        ) : viewMode === 'table' ? (
+          /* TABLE VIEW */
+          <div className="bg-white rounded-2xl shadow-tiger-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gradient-to-r from-willard-black to-willard-grey-900 text-white">
+                  <tr>
+                    <th className="text-left py-4 px-6">
+                      <button
+                        onClick={() => handleSort('name')}
+                        className="flex items-center gap-2 font-black text-sm uppercase tracking-wider hover:text-willard-grey-300 transition"
+                      >
+                        Player
+                        <SortIcon field="name" />
+                      </button>
+                    </th>
+                    <th className="text-center py-4 px-4">
+                      <button
+                        onClick={() => handleSort('average')}
+                        className="flex items-center justify-center gap-2 font-black text-sm uppercase tracking-wider hover:text-willard-grey-300 transition mx-auto"
+                      >
+                        Average
+                        <SortIcon field="average" />
+                      </button>
+                    </th>
+                    <th className="text-center py-4 px-4">
+                      <button
+                        onClick={() => handleSort('highGame')}
+                        className="flex items-center justify-center gap-2 font-black text-sm uppercase tracking-wider hover:text-willard-grey-300 transition mx-auto"
+                      >
+                        High Game
+                        <SortIcon field="highGame" />
+                      </button>
+                    </th>
+                    <th className="text-center py-4 px-4">
+                      <button
+                        onClick={() => handleSort('games')}
+                        className="flex items-center justify-center gap-2 font-black text-sm uppercase tracking-wider hover:text-willard-grey-300 transition mx-auto"
+                      >
+                        Games
+                        <SortIcon field="games" />
+                      </button>
+                    </th>
+                    <th className="py-4 px-6"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-willard-grey-200">
+                  {sortedPlayers.map((player) => (
+                    <tr
+                      key={player.id}
+                      className="hover:bg-willard-grey-50 transition-colors"
+                    >
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-willard-black to-willard-grey-900 text-white rounded-full flex items-center justify-center text-lg font-black shadow-lg flex-shrink-0">
+                            {player.jerseyNumber || player.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="font-black text-willard-black">{player.name}</div>
+                            {player.grade && (
+                              <div className="text-sm text-willard-grey-600 font-semibold">
+                                Grade {player.grade}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="text-2xl font-black text-willard-black">
+                          {player.averageScore || '-'}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="text-2xl font-black text-willard-black">
+                          {player.highGame || '-'}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="text-xl font-black text-willard-grey-700">
+                          {player.gamesPlayed || 0}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <button
+                          onClick={() => setSelectedPlayer(player)}
+                          className="bg-willard-black text-white py-2 px-4 rounded-lg font-semibold hover:bg-willard-grey-900 transition flex items-center gap-2 whitespace-nowrap"
+                        >
+                          View
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         ) : (
+          /* GRID VIEW */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {players.map((player) => (
+            {sortedPlayers.map((player) => (
               <div
                 key={player.id}
                 className="bg-white rounded-2xl shadow-tiger-lg hover:shadow-tiger-2xl transition-all hover:scale-105 overflow-hidden cursor-pointer"
