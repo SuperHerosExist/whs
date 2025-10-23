@@ -195,7 +195,7 @@ export const Stats: React.FC = () => {
               HYPE ZONE
             </h2>
           </div>
-          <p className="text-tiger-neutral-600 mb-8 max-w-3xl">
+          <p className="text-tiger-neutral-600 mb-8">
             Track the team's hottest performances, USBC Youth achievements, and record-breaking series!
           </p>
 
@@ -540,7 +540,7 @@ export const Stats: React.FC = () => {
             <h2 className="text-3xl font-display font-black mb-4">
               Detailed Statistics & Frame-by-Frame Analysis
             </h2>
-            <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-300 mb-8">
               Access comprehensive bowling statistics, frame-by-frame analysis, and advanced performance metrics
               through our dedicated Stats application.
             </p>

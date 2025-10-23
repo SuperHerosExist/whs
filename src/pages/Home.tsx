@@ -127,7 +127,7 @@ export const Home: React.FC = () => {
             <h3 className="text-2xl md:text-3xl font-black text-willard-grey-900 tracking-tight text-center">LIVE STATS</h3>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat, idx) => (
               <div
                 key={idx}
@@ -171,7 +171,7 @@ export const Home: React.FC = () => {
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 md:gap-10 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-10">
             <div className="bg-gradient-to-br from-willard-grey-900 to-willard-black rounded-2xl p-10 md:p-12 text-white shadow-lg hover:shadow-xl transition-all relative overflow-hidden group">
               <div className="absolute top-6 right-6 text-8xl opacity-10 group-hover:opacity-15 transition-all">
                 🏆
@@ -217,7 +217,7 @@ export const Home: React.FC = () => {
       {/* ⚡ CALL TO ACTION - IMPROVED SPACING */}
       <section className="w-full bg-white py-20 md:py-24">
         <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-willard-black via-willard-grey-900 to-willard-grey-800 rounded-3xl p-12 md:p-20 text-center text-white shadow-xl relative overflow-hidden max-w-5xl mx-auto">
+          <div className="bg-gradient-to-r from-willard-black via-willard-grey-900 to-willard-grey-800 rounded-3xl p-12 md:p-20 text-center text-white shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-1/2 left-1/4 text-9xl">🎳</div>
               <div className="absolute top-1/4 right-1/4 text-9xl">⚡</div>

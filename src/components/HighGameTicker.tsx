@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { getAllPlayerStats } from '@/lib/statsCalculator';
 
 interface TickerItem {
   id: string;
+  playerId: string;
   playerName: string;
   type: 'highGame' | 'highSeries' | 'overAverage' | 'achievement' | 'streak';
   value: number;
@@ -14,6 +16,7 @@ interface TickerItem {
 export const HighGameTicker: React.FC = () => {
   const [tickerItems, setTickerItems] = useState<TickerItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTickerData = async () => {
@@ -26,6 +29,7 @@ export const HighGameTicker: React.FC = () => {
           if (stat.highGame >= 200) {
             items.push({
               id: `highgame-${stat.playerId}`,
+              playerId: stat.playerId,
               playerName: stat.playerName,
               type: 'highGame',
               value: stat.highGame,
@@ -38,6 +42,7 @@ export const HighGameTicker: React.FC = () => {
           if (stat.highSeries >= 500) {
             items.push({
               id: `highseries-${stat.playerId}`,
+              playerId: stat.playerId,
               playerName: stat.playerName,
               type: 'highSeries',
               value: stat.highSeries,
@@ -50,6 +55,7 @@ export const HighGameTicker: React.FC = () => {
           if (stat.gamesOver100 > 0) {
             items.push({
               id: `gold-${stat.playerId}`,
+              playerId: stat.playerId,
               playerName: stat.playerName,
               type: 'achievement',
               value: stat.gamesOver100,
@@ -62,6 +68,7 @@ export const HighGameTicker: React.FC = () => {
           if (stat.gamesOver50 > 0) {
             items.push({
               id: `silver-${stat.playerId}`,
+              playerId: stat.playerId,
               playerName: stat.playerName,
               type: 'achievement',
               value: stat.gamesOver50,
@@ -74,6 +81,7 @@ export const HighGameTicker: React.FC = () => {
           if (stat.gamesOver25 > 0 && stat.gamesOver25 <= 10) {
             items.push({
               id: `bronze-${stat.playerId}`,
+              playerId: stat.playerId,
               playerName: stat.playerName,
               type: 'achievement',
               value: stat.gamesOver25,
@@ -86,6 +94,7 @@ export const HighGameTicker: React.FC = () => {
           if (stat.longestStreak >= 5) {
             items.push({
               id: `streak-${stat.playerId}`,
+              playerId: stat.playerId,
               playerName: stat.playerName,
               type: 'streak',
               value: stat.longestStreak,
@@ -98,6 +107,7 @@ export const HighGameTicker: React.FC = () => {
           if (stat.gamesOver25 > 5) {
             items.push({
               id: `overavg-${stat.playerId}`,
+              playerId: stat.playerId,
               playerName: stat.playerName,
               type: 'overAverage',
               value: stat.gamesOver25,
@@ -125,17 +135,13 @@ export const HighGameTicker: React.FC = () => {
     return null;
   }
 
+  const handleTickerClick = (playerId: string) => {
+    navigate(`/roster?player=${playerId}`);
+  };
+
   return (
     <div className="bg-black text-white py-3 md:py-4 overflow-hidden shadow-lg border-t-2 border-yellow-500 relative">
       <div className="flex items-center gap-4">
-        {/* ESPN-style ticker header - Fixed on left */}
-        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 bg-black pl-4 pr-6 py-1 z-10">
-          <div className="bg-yellow-500 text-black px-3 md:px-4 py-1 md:py-1.5 rounded font-black text-xs md:text-sm uppercase tracking-wider shadow-lg">
-            Live Highlights
-          </div>
-          <Zap className="w-5 h-5 text-yellow-500 animate-pulse" />
-        </div>
-
         {/* Continuous scrolling ticker */}
         <div className="flex-1 overflow-hidden relative">
           <style>{`
@@ -144,17 +150,21 @@ export const HighGameTicker: React.FC = () => {
               100% { transform: translateX(-50%); }
             }
             .ticker-scroll {
-              animation: scroll-left 60s linear infinite;
+              animation: scroll-left 30s linear infinite;
             }
             .ticker-scroll:hover {
               animation-play-state: paused;
             }
           `}</style>
 
-          <div className="ticker-scroll flex items-center gap-8 whitespace-nowrap">
+          <div className="ticker-scroll flex items-center gap-8 whitespace-nowrap pl-4">
             {/* Duplicate the items for seamless loop */}
             {[...tickerItems, ...tickerItems].map((item, idx) => (
-              <div key={`${item.id}-${idx}`} className="flex items-center gap-3 text-sm md:text-base font-bold">
+              <div
+                key={`${item.id}-${idx}`}
+                onClick={() => handleTickerClick(item.playerId)}
+                className="flex items-center gap-3 text-sm md:text-base font-bold cursor-pointer hover:text-yellow-400 transition-colors"
+              >
                 <span className="text-2xl">{item.icon}</span>
                 <span>
                   <span className="text-yellow-500">{item.playerName}</span>
@@ -163,6 +173,14 @@ export const HighGameTicker: React.FC = () => {
                 <span className="text-yellow-500 mx-2">•</span>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* ESPN-style ticker header - Fixed on right */}
+        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 bg-black pr-4 pl-6 py-1 z-10">
+          <Zap className="w-5 h-5 text-yellow-500 animate-pulse" />
+          <div className="bg-yellow-500 text-black px-3 md:px-4 py-1 md:py-1.5 rounded font-black text-xs md:text-sm uppercase tracking-wider shadow-lg">
+            Live Highlights
           </div>
         </div>
       </div>
