@@ -1,95 +1,168 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, TrendingUp, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { getAllPlayerStats } from '@/lib/statsCalculator';
 
-interface HighGameEntry {
+interface TickerItem {
+  id: string;
   playerName: string;
-  score: number;
-  date?: string;
+  type: 'highGame' | 'highSeries' | 'overAverage' | 'achievement' | 'streak';
+  value: number;
+  icon: string;
+  message: string;
 }
 
 export const HighGameTicker: React.FC = () => {
-  const [highGames, setHighGames] = useState<HighGameEntry[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [tickerItems, setTickerItems] = useState<TickerItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchHighGames = async () => {
+    const fetchTickerData = async () => {
       try {
         const playerStats = await getAllPlayerStats();
+        const items: TickerItem[] = [];
 
-        // Get all players with high games, sorted by high game descending
-        const gamesWithHighScores = playerStats
-          .filter(stat => stat.highGame > 0)
-          .sort((a, b) => b.highGame - a.highGame)
-          .slice(0, 10) // Top 10 high games
-          .map(stat => ({
-            playerName: stat.playerName,
-            score: stat.highGame,
-          }));
+        playerStats.forEach(stat => {
+          // High Games (200+)
+          if (stat.highGame >= 200) {
+            items.push({
+              id: `highgame-${stat.playerId}`,
+              playerName: stat.playerName,
+              type: 'highGame',
+              value: stat.highGame,
+              icon: '🎳',
+              message: `rolled a ${stat.highGame}!`
+            });
+          }
 
-        setHighGames(gamesWithHighScores);
-        console.log(`🎯 Loaded ${gamesWithHighScores.length} high games for ticker`);
+          // High Series (500+)
+          if (stat.highSeries >= 500) {
+            items.push({
+              id: `highseries-${stat.playerId}`,
+              playerName: stat.playerName,
+              type: 'highSeries',
+              value: stat.highSeries,
+              icon: '🔥',
+              message: `series of ${stat.highSeries}!`
+            });
+          }
+
+          // USBC Gold Achievement (100+ over average)
+          if (stat.gamesOver100 > 0) {
+            items.push({
+              id: `gold-${stat.playerId}`,
+              playerName: stat.playerName,
+              type: 'achievement',
+              value: stat.gamesOver100,
+              icon: '🥇',
+              message: `earned ${stat.gamesOver100} Gold medal${stat.gamesOver100 > 1 ? 's' : ''}!`
+            });
+          }
+
+          // USBC Silver Achievement (50+ over average)
+          if (stat.gamesOver50 > 0) {
+            items.push({
+              id: `silver-${stat.playerId}`,
+              playerName: stat.playerName,
+              type: 'achievement',
+              value: stat.gamesOver50,
+              icon: '🥈',
+              message: `earned ${stat.gamesOver50} Silver medal${stat.gamesOver50 > 1 ? 's' : ''}!`
+            });
+          }
+
+          // USBC Bronze Achievement (25+ over average)
+          if (stat.gamesOver25 > 0 && stat.gamesOver25 <= 10) {
+            items.push({
+              id: `bronze-${stat.playerId}`,
+              playerName: stat.playerName,
+              type: 'achievement',
+              value: stat.gamesOver25,
+              icon: '🥉',
+              message: `earned ${stat.gamesOver25} Bronze medal${stat.gamesOver25 > 1 ? 's' : ''}!`
+            });
+          }
+
+          // Hot Streak (5+ games above average)
+          if (stat.longestStreak >= 5) {
+            items.push({
+              id: `streak-${stat.playerId}`,
+              playerName: stat.playerName,
+              type: 'streak',
+              value: stat.longestStreak,
+              icon: '🔥',
+              message: `is on fire with a ${stat.longestStreak}-game hot streak!`
+            });
+          }
+
+          // Pins Over Average highlights
+          if (stat.gamesOver25 > 5) {
+            items.push({
+              id: `overavg-${stat.playerId}`,
+              playerName: stat.playerName,
+              type: 'overAverage',
+              value: stat.gamesOver25,
+              icon: '📈',
+              message: `scored 25+ pins over average ${stat.gamesOver25} times!`
+            });
+          }
+        });
+
+        // Shuffle items for variety
+        const shuffled = items.sort(() => Math.random() - 0.5);
+        setTickerItems(shuffled.slice(0, 20)); // Limit to 20 items
+        console.log(`🎯 Loaded ${shuffled.length} ticker items`);
       } catch (error) {
-        console.error('❌ Error fetching high games:', error);
+        console.error('❌ Error fetching ticker data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchHighGames();
+    fetchTickerData();
   }, []);
 
-  // Rotate through high games every 4 seconds
-  useEffect(() => {
-    if (highGames.length === 0) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % highGames.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [highGames]);
-
-  if (loading || highGames.length === 0) {
+  if (loading || tickerItems.length === 0) {
     return null;
   }
 
-  const currentGame = highGames[currentIndex];
-
   return (
-    <div className="bg-black text-white py-2 md:py-3 overflow-hidden shadow-lg border-t-2 border-yellow-500">
-      <div className="max-w-7xl mx-auto px-3 md:px-6">
-        <div className="flex items-center justify-between gap-2 md:gap-6">
-          {/* ESPN-style ticker header */}
-          <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
-            <div className="bg-yellow-500 text-black px-2 md:px-3 py-0.5 md:py-1 rounded font-black text-xs md:text-sm uppercase tracking-wider">
-              High Games
-            </div>
-            <Trophy className="w-4 h-4 md:w-5 md:h-5 text-yellow-500" />
+    <div className="bg-black text-white py-3 md:py-4 overflow-hidden shadow-lg border-t-2 border-yellow-500 relative">
+      <div className="flex items-center gap-4">
+        {/* ESPN-style ticker header - Fixed on left */}
+        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 bg-black pl-4 pr-6 py-1 z-10">
+          <div className="bg-yellow-500 text-black px-3 md:px-4 py-1 md:py-1.5 rounded font-black text-xs md:text-sm uppercase tracking-wider shadow-lg">
+            Live Highlights
           </div>
+          <Zap className="w-5 h-5 text-yellow-500 animate-pulse" />
+        </div>
 
-          {/* Scrolling content */}
-          <div className="flex-1 overflow-hidden">
-            <div
-              key={currentIndex}
-              className="animate-slide-up flex items-center gap-2 md:gap-4 text-sm md:text-base font-bold"
-            >
-              <Zap className="w-4 h-4 md:w-5 md:h-5 text-yellow-500 flex-shrink-0" />
-              <span className="truncate">
-                <span className="text-yellow-500">{currentGame.playerName}</span>
-                {' '}rolled a{' '}
-                <span className="text-xl md:text-2xl font-black">{currentGame.score}</span>
-              </span>
-            </div>
-          </div>
+        {/* Continuous scrolling ticker */}
+        <div className="flex-1 overflow-hidden relative">
+          <style>{`
+            @keyframes scroll-left {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+            .ticker-scroll {
+              animation: scroll-left 60s linear infinite;
+            }
+            .ticker-scroll:hover {
+              animation-play-state: paused;
+            }
+          `}</style>
 
-          {/* Position indicator */}
-          <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
-            <TrendingUp className="w-3 h-3 md:w-4 md:h-4 text-yellow-500" />
-            <span className="text-xs md:text-sm font-semibold">
-              {currentIndex + 1}/{highGames.length}
-            </span>
+          <div className="ticker-scroll flex items-center gap-8 whitespace-nowrap">
+            {/* Duplicate the items for seamless loop */}
+            {[...tickerItems, ...tickerItems].map((item, idx) => (
+              <div key={`${item.id}-${idx}`} className="flex items-center gap-3 text-sm md:text-base font-bold">
+                <span className="text-2xl">{item.icon}</span>
+                <span>
+                  <span className="text-yellow-500">{item.playerName}</span>
+                  {' '}{item.message}
+                </span>
+                <span className="text-yellow-500 mx-2">•</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

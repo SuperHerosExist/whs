@@ -82,16 +82,20 @@ export const Home: React.FC = () => {
             <span className="font-semibold">Focused. Connected. Driven.</span>
           </div>
 
-          {/* Subheading - WITH EXTRA SPACING */}
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-12 leading-tight max-w-4xl mx-auto animate-slide-up" style={{animationDelay: '0.3s'}}>
-            STRIKE YOUR WAY<br />TO VICTORY
-          </h2>
+          {/* Subheading - FULLY CENTERED */}
+          <div className="w-full flex justify-center mb-12">
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-tight text-center animate-slide-up" style={{animationDelay: '0.3s'}}>
+              STRIKE YOUR WAY<br />TO VICTORY
+            </h2>
+          </div>
 
-          {/* Description */}
-          <p className="text-base md:text-lg max-w-2xl mx-auto mb-10 opacity-85 leading-relaxed">
-            Join the most dynamic high school bowling program in the region.
-            We're building champions, one frame at a time.
-          </p>
+          {/* Description - FULLY CENTERED */}
+          <div className="w-full flex justify-center mb-10">
+            <p className="text-base md:text-lg max-w-2xl opacity-85 leading-relaxed text-center">
+              Join the most dynamic high school bowling program in the region.
+              We're building champions, one frame at a time.
+            </p>
+          </div>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -115,15 +119,15 @@ export const Home: React.FC = () => {
       {/* 🔥 ESPN-STYLE HIGH GAME TICKER */}
       <HighGameTicker />
 
-      {/* 📊 STATS GRID - LIVE STATS */}
+      {/* 📊 STATS GRID - LIVE STATS - CENTERED */}
       <section className="w-full bg-white py-16 md:py-20">
         <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
             <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
-            <h3 className="text-2xl md:text-3xl font-black text-willard-grey-900 tracking-tight">LIVE STATS</h3>
+            <h3 className="text-2xl md:text-3xl font-black text-willard-grey-900 tracking-tight text-center">LIVE STATS</h3>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {stats.map((stat, idx) => (
               <div
                 key={idx}
@@ -158,50 +162,50 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 🏆 RECENT HIGHLIGHTS - NO TAGLINE */}
-      <section className="w-full bg-gradient-to-br from-willard-grey-50 via-willard-white to-willard-grey-100 py-20">
+      {/* 🏆 RECENT HIGHLIGHTS - IMPROVED SPACING */}
+      <section className="w-full bg-gradient-to-br from-willard-grey-50 via-willard-white to-willard-grey-100 py-20 md:py-24">
         <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16 md:mb-20">
             <h2 className="text-3xl md:text-4xl font-black text-willard-grey-900">
               Recent Highlights
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-gradient-to-br from-willard-grey-900 to-willard-black rounded-2xl p-8 text-white shadow-lg hover:shadow-xl transition-all relative overflow-hidden group">
-              <div className="absolute top-4 right-4 text-7xl opacity-10 group-hover:opacity-15 transition-all">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-10 max-w-6xl mx-auto">
+            <div className="bg-gradient-to-br from-willard-grey-900 to-willard-black rounded-2xl p-10 md:p-12 text-white shadow-lg hover:shadow-xl transition-all relative overflow-hidden group">
+              <div className="absolute top-6 right-6 text-8xl opacity-10 group-hover:opacity-15 transition-all">
                 🏆
               </div>
               <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-5">
                   <Star className="w-5 h-5" />
                   <span className="text-xs font-bold uppercase tracking-wide opacity-75">Coming soon</span>
                 </div>
-                <h3 className="font-black text-xl md:text-2xl mb-2">
+                <h3 className="font-black text-xl md:text-2xl mb-4">
                   Season Starting Soon
                 </h3>
-                <p className="opacity-90 text-sm md:text-base">
+                <p className="opacity-90 text-sm md:text-base leading-relaxed">
                   Check back soon for recent highlights and achievements
                 </p>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-willard-grey-800 to-willard-grey-900 rounded-2xl p-8 text-white shadow-lg hover:shadow-xl transition-all relative overflow-hidden group">
-              <div className="absolute top-4 right-4 text-7xl opacity-10 group-hover:opacity-15 transition-all">
+            <div className="bg-gradient-to-br from-willard-grey-800 to-willard-grey-900 rounded-2xl p-10 md:p-12 text-white shadow-lg hover:shadow-xl transition-all relative overflow-hidden group">
+              <div className="absolute top-6 right-6 text-8xl opacity-10 group-hover:opacity-15 transition-all">
                 📅
               </div>
               <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-5">
                   <Calendar className="w-5 h-5" />
                   <span className="text-xs font-bold uppercase tracking-wide opacity-75">Next Match</span>
                 </div>
-                <h3 className="font-black text-xl md:text-2xl mb-2">
+                <h3 className="font-black text-xl md:text-2xl mb-4">
                   Friday, March 15th at 3:30 PM
                 </h3>
-                <p className="opacity-90 text-sm md:text-base mb-1">
+                <p className="opacity-90 text-sm md:text-base mb-2 leading-relaxed">
                   vs. Springfield Central
                 </p>
-                <p className="opacity-75 text-xs md:text-sm">
+                <p className="opacity-75 text-xs md:text-sm leading-relaxed">
                   Willard Lanes • Home Match
                 </p>
               </div>
@@ -210,28 +214,28 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ⚡ CALL TO ACTION */}
-      <section className="w-full bg-white py-20">
+      {/* ⚡ CALL TO ACTION - IMPROVED SPACING */}
+      <section className="w-full bg-white py-20 md:py-24">
         <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-willard-black via-willard-grey-900 to-willard-grey-800 rounded-2xl p-12 md:p-16 text-center text-white shadow-xl relative overflow-hidden">
+          <div className="bg-gradient-to-r from-willard-black via-willard-grey-900 to-willard-grey-800 rounded-3xl p-12 md:p-20 text-center text-white shadow-xl relative overflow-hidden max-w-5xl mx-auto">
             <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-1/2 left-1/4 text-8xl">🎳</div>
-              <div className="absolute top-1/4 right-1/4 text-8xl">⚡</div>
+              <div className="absolute top-1/2 left-1/4 text-9xl">🎳</div>
+              <div className="absolute top-1/4 right-1/4 text-9xl">⚡</div>
             </div>
 
             <div className="relative z-10 w-full">
-              <div className="flex justify-center mb-6 w-full">
-                <div className="inline-block bg-yellow-500 text-willard-black px-5 py-2 rounded-full text-xs font-black uppercase tracking-wide">
+              <div className="flex justify-center mb-8 w-full">
+                <div className="inline-block bg-yellow-500 text-willard-black px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wide shadow-lg">
                   NEW MEMBERS WELCOME
                 </div>
               </div>
-              <h3 className="text-3xl md:text-4xl font-black mb-6 text-center w-full">
+              <h3 className="text-3xl md:text-5xl font-black mb-8 text-center w-full leading-tight">
                 Ready to Join<br />The Tigers?
               </h3>
-              <p className="text-xl md:text-2xl mb-3 font-bold max-w-3xl mx-auto text-center w-full">
+              <p className="text-xl md:text-2xl mb-4 font-bold max-w-3xl mx-auto text-center w-full leading-relaxed">
                 {practiceSchedule.getScheduleText()}
               </p>
-              <p className="text-sm md:text-base mb-8 opacity-75 max-w-2xl mx-auto text-center w-full">
+              <p className="text-sm md:text-base mb-0 opacity-75 max-w-2xl mx-auto text-center w-full leading-relaxed">
                 {practiceSchedule.getDetailsText()}
               </p>
             </div>
