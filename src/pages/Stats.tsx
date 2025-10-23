@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { calculateTeamStats, getAllPlayerStats } from '@/lib/statsCalculator';
+import { calculateTeamStats, getAllPlayerStats, type PlayerGameStats } from '@/lib/statsCalculator';
 import { generateTeamInsights, type AIInsight, type TeamStatsForAI } from '@/lib/gemini';
 import type { Player } from '@/types';
-import { Trophy, Target, Zap, Award, BarChart3, Sparkles, TrendingUp, AlertCircle, Lightbulb } from 'lucide-react';
+import { Trophy, Target, Zap, Award, BarChart3, Sparkles, TrendingUp, AlertCircle, Lightbulb, Flame, Medal } from 'lucide-react';
 
 export const Stats: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -11,10 +11,13 @@ export const Stats: React.FC = () => {
     teamAverage: 0,
     highGame: 0,
     highGamePlayer: '',
+    highSeries: 0,
     totalGames: 0,
     activePlayers: 0,
+    totalAchievements: 0,
   });
   const [topPerformers, setTopPerformers] = useState<Player[]>([]);
+  const [allPlayerStats, setAllPlayerStats] = useState<PlayerGameStats[]>([]);
   const [aiInsights, setAiInsights] = useState<AIInsight[]>([]);
 
   useEffect(() => {
@@ -27,12 +30,15 @@ export const Stats: React.FC = () => {
           teamAverage: teamStatsData.teamAverage,
           highGame: teamStatsData.highIndividualGame,
           highGamePlayer: teamStatsData.highIndividualGamePlayer,
+          highSeries: teamStatsData.highTeamSeries,
           totalGames: teamStatsData.totalGames,
           activePlayers: teamStatsData.totalPlayers,
+          totalAchievements: teamStatsData.totalAchievements,
         });
 
         // Get all player stats and extract top performers
         const allPlayerStats = await getAllPlayerStats();
+        setAllPlayerStats(allPlayerStats);
 
         // Convert to Player type for display (top 5 by average)
         const topPerformersData: Player[] = allPlayerStats
@@ -171,6 +177,112 @@ export const Stats: React.FC = () => {
           />
         </div>
       </section>
+
+      {/* 🔥 HYPE ZONE - Achievements & Records */}
+      {teamStats.totalGames > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex items-center gap-3 mb-8">
+            <Flame className="w-8 h-8 text-orange-500" />
+            <h2 className="text-3xl font-display font-black text-tiger-primary-black">
+              HYPE ZONE
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {/* High Series Record */}
+            <div className="bg-gradient-to-br from-tiger-tiger-gold to-yellow-600 rounded-2xl shadow-tiger-lg p-6 text-tiger-primary-black">
+              <div className="flex items-center gap-3 mb-2">
+                <Trophy className="w-8 h-8" />
+                <h3 className="text-2xl font-display font-black">HIGH SERIES</h3>
+              </div>
+              <div className="text-5xl font-display font-black mb-1">
+                {teamStats.highSeries > 0 ? teamStats.highSeries : '--'}
+              </div>
+              <p className="text-sm font-bold opacity-90">Best 3-Game Series</p>
+            </div>
+
+            {/* Total Achievements */}
+            <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl shadow-tiger-lg p-6 text-white">
+              <div className="flex items-center gap-3 mb-2">
+                <Medal className="w-8 h-8" />
+                <h3 className="text-2xl font-display font-black">ACHIEVEMENTS</h3>
+              </div>
+              <div className="text-5xl font-display font-black mb-1">
+                {teamStats.totalAchievements}
+              </div>
+              <p className="text-sm font-bold opacity-90">USBC Youth Goals Crushed</p>
+            </div>
+
+            {/* Hot Streaks */}
+            {allPlayerStats.length > 0 && (() => {
+              const hotPlayers = allPlayerStats.filter(p => p.currentStreak >= 3);
+              const longestStreaker = allPlayerStats.reduce((max, p) =>
+                p.longestStreak > max.longestStreak ? p : max
+              , allPlayerStats[0]);
+
+              return (
+                <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-tiger-lg p-6 text-white">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Flame className="w-8 h-8" />
+                    <h3 className="text-2xl font-display font-black">ON FIRE</h3>
+                  </div>
+                  <div className="text-5xl font-display font-black mb-1">
+                    {hotPlayers.length}
+                  </div>
+                  <p className="text-sm font-bold opacity-90">
+                    {hotPlayers.length === 1 ? 'Bowler' : 'Bowlers'} on Hot Streaks
+                  </p>
+                  {longestStreaker.longestStreak > 0 && (
+                    <p className="text-xs mt-2 opacity-75">
+                      Record: {longestStreaker.longestStreak} games ({longestStreaker.playerName})
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* USBC Youth Achievement Breakdown */}
+          <div className="bg-white rounded-2xl shadow-tiger-lg p-8">
+            <h3 className="text-2xl font-display font-black text-tiger-primary-black mb-6">
+              USBC YOUTH ACHIEVEMENTS
+            </h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              {(() => {
+                const bronze = allPlayerStats.reduce((sum, p) => sum + p.gamesOver25 + p.seriesOver25, 0);
+                const silver = allPlayerStats.reduce((sum, p) => sum + p.gamesOver50 + p.seriesOver50, 0);
+                const gold = allPlayerStats.reduce((sum, p) => sum + p.gamesOver100 + p.seriesOver100, 0);
+
+                return (
+                  <>
+                    <AchievementCard
+                      icon="🥉"
+                      title="Bronze Goals"
+                      subtitle="+25 Pins Over Average"
+                      count={bronze}
+                      color="from-amber-700 to-amber-900"
+                    />
+                    <AchievementCard
+                      icon="🥈"
+                      title="Silver Goals"
+                      subtitle="+50 Pins Over Average"
+                      count={silver}
+                      color="from-gray-400 to-gray-600"
+                    />
+                    <AchievementCard
+                      icon="🥇"
+                      title="Gold Goals"
+                      subtitle="+100 Pins Over Average"
+                      count={gold}
+                      color="from-tiger-tiger-gold to-yellow-600"
+                    />
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* AI-Powered Insights */}
       {teamStats.totalGames > 0 && (
@@ -376,6 +488,27 @@ const StatCard: React.FC<StatCardProps> = ({ icon: Icon, label, value, color }) 
       </div>
       <div className="text-sm font-semibold text-tiger-neutral-600">
         {label}
+      </div>
+    </div>
+  );
+};
+
+interface AchievementCardProps {
+  icon: string;
+  title: string;
+  subtitle: string;
+  count: number;
+  color: string;
+}
+
+const AchievementCard: React.FC<AchievementCardProps> = ({ icon, title, subtitle, count, color }) => {
+  return (
+    <div className="relative overflow-hidden">
+      <div className={`bg-gradient-to-br ${color} rounded-xl p-6 text-white shadow-tiger`}>
+        <div className="text-5xl mb-3">{icon}</div>
+        <div className="text-4xl font-display font-black mb-2">{count}</div>
+        <div className="text-lg font-bold mb-1">{title}</div>
+        <div className="text-sm opacity-90">{subtitle}</div>
       </div>
     </div>
   );
