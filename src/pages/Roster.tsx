@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Player } from '@/types';
+import type { Player, StatsAppGame } from '@/types';
 import { Users, ChevronRight } from 'lucide-react';
 
+interface PlayerWithStats extends Player {
+  calculatedAverage?: number;
+  calculatedHighGame?: number;
+  calculatedHighSeries?: number;
+}
+
 export const Roster: React.FC = () => {
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [players, setPlayers] = useState<PlayerWithStats[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerWithStats | null>(null);
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -16,8 +22,7 @@ export const Roster: React.FC = () => {
         const q = query(
           playersRef,
           where('programId', '==', 'willard-tigers'),
-          where('isActive', '==', true),
-          orderBy('averageScore', 'desc')
+          where('isActive', '==', true)
         );
 
         const snapshot = await getDocs(q);
@@ -28,7 +33,57 @@ export const Roster: React.FC = () => {
           updatedAt: doc.data().updatedAt?.toDate() || new Date(),
         })) as Player[];
 
-        setPlayers(playersData);
+        // Fetch game data for each player and calculate stats
+        const playersWithStats = await Promise.all(
+          playersData.map(async (player) => {
+            const gamesRef = collection(db, 'games');
+            const gamesQuery = query(
+              gamesRef,
+              where('playerId', '==', player.id),
+              where('isComplete', '==', true),
+              orderBy('timestamp', 'desc')
+            );
+
+            const gamesSnapshot = await getDocs(gamesQuery);
+            const games = gamesSnapshot.docs.map(doc => doc.data() as StatsAppGame);
+
+            // Calculate stats from games
+            let calculatedAverage = 0;
+            let calculatedHighGame = 0;
+            let calculatedHighSeries = 0;
+            let gamesPlayed = games.length;
+
+            if (games.length > 0) {
+              // Calculate average
+              const totalScore = games.reduce((sum, game) => sum + (game.totalScore || 0), 0);
+              calculatedAverage = Math.round(totalScore / games.length);
+
+              // Find high game
+              calculatedHighGame = Math.max(...games.map(game => game.totalScore || 0));
+
+              // Calculate high series (best 3 consecutive games)
+              if (games.length >= 3) {
+                for (let i = 0; i <= games.length - 3; i++) {
+                  const seriesScore = games[i].totalScore + games[i + 1].totalScore + games[i + 2].totalScore;
+                  calculatedHighSeries = Math.max(calculatedHighSeries, seriesScore);
+                }
+              }
+            }
+
+            return {
+              ...player,
+              calculatedAverage,
+              calculatedHighGame,
+              calculatedHighSeries,
+              gamesPlayed,
+            };
+          })
+        );
+
+        // Sort by calculated average (descending)
+        playersWithStats.sort((a, b) => (b.calculatedAverage || 0) - (a.calculatedAverage || 0));
+
+        setPlayers(playersWithStats);
       } catch (error) {
         console.error('Error fetching players:', error);
       } finally {
@@ -116,7 +171,7 @@ export const Roster: React.FC = () => {
                       Average
                     </span>
                     <span className="font-black text-willard-black text-3xl">
-                      {player.averageScore || 0}
+                      {player.calculatedAverage || 0}
                     </span>
                   </div>
                 </div>
@@ -127,7 +182,7 @@ export const Roster: React.FC = () => {
                       High Game
                     </span>
                     <span className="font-black text-willard-grey-800 text-3xl">
-                      {player.highGame || 0}
+                      {player.calculatedHighGame || 0}
                     </span>
                   </div>
                 </div>
@@ -196,7 +251,7 @@ export const Roster: React.FC = () => {
                   🎯 Bowling Average
                 </div>
                 <div className="text-6xl font-black">
-                  {selectedPlayer.averageScore || 0}
+                  {selectedPlayer.calculatedAverage || 0}
                 </div>
               </div>
 
@@ -205,9 +260,20 @@ export const Roster: React.FC = () => {
                   🔥 High Game
                 </div>
                 <div className="text-6xl font-black">
-                  {selectedPlayer.highGame || 0}
+                  {selectedPlayer.calculatedHighGame || 0}
                 </div>
               </div>
+
+              {selectedPlayer.calculatedHighSeries && selectedPlayer.calculatedHighSeries > 0 && (
+                <div className="bg-gradient-to-br from-willard-grey-700 to-willard-grey-800 text-white rounded-3xl p-8 shadow-tiger-xl">
+                  <div className="text-sm font-bold mb-2 opacity-90 uppercase tracking-wide">
+                    ⚡ High Series (3 Games)
+                  </div>
+                  <div className="text-6xl font-black">
+                    {selectedPlayer.calculatedHighSeries}
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gradient-to-br from-willard-grey-700 to-willard-grey-800 text-white rounded-3xl p-6 shadow-tiger-lg">
