@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { statsDb, STATS_TEAM_ID } from '@/lib/statsFirebase';
-import { getAllPlayerStats, type PlayerGameStats } from '@/lib/statsCalculator';
+import { getAllPlayerStats } from '@/lib/statsCalculator';
 import type { Player } from '@/types';
 import { Users, ChevronRight } from 'lucide-react';
-import { WillardLogo } from '@/components/WillardLogo';
+// import { WillardLogo } from '@/components/WillardLogo';
 
 export const Roster: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
-  // const [playerStats, setPlayerStats] = useState<Map<string, PlayerGameStats>>(new Map());
   const [loading, setLoading] = useState(true);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        // Fetch calculated player stats from game data
+        // Fetch calculated stats to supplement player data
         const calculatedStats = await getAllPlayerStats();
-        const statsMap = new Map<string, PlayerGameStats>();
+        const statsMap = new Map();
         calculatedStats.forEach(stat => {
           statsMap.set(stat.playerId, stat);
         });
-        // setPlayerStats(statsMap);
 
-        // Fetch team players for additional info (name, photo, etc.)
+        // First, get the team document to access playerIds array
         const teamRef = doc(statsDb, 'teams', STATS_TEAM_ID);
         const teamSnap = await getDoc(teamRef);
 
@@ -36,7 +34,7 @@ export const Roster: React.FC = () => {
         const teamData = teamSnap.data();
         const playerIds = teamData?.playerIds || [];
 
-        // Fetch each player individually
+        // Fetch each player individually by ID
         const playersData: Player[] = [];
         for (const playerId of playerIds) {
           try {
@@ -45,18 +43,19 @@ export const Roster: React.FC = () => {
 
             if (playerSnap.exists()) {
               const data = playerSnap.data();
-              const stats = statsMap.get(playerId);
+              const calculatedStat = statsMap.get(playerId);
 
+              // Use calculated stats if available, otherwise fall back to stored data
               playersData.push({
                 id: playerSnap.id,
                 uid: data.uid || playerSnap.id,
-                name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Unknown Player',
+                name: data.name || 'Unknown Player',
                 email: data.email || '',
                 grade: data.grade || '',
                 graduationYear: data.graduationYear || new Date().getFullYear(),
-                averageScore: stats?.average || 0,
-                highGame: stats?.highGame || 0,
-                gamesPlayed: stats?.games || 0,
+                averageScore: calculatedStat?.average || data.average || 0,
+                highGame: calculatedStat?.highGame || data.highGame || 0,
+                gamesPlayed: calculatedStat?.games || data.gamesPlayed || 0,
                 programId: 'willard-tigers',
                 teamIds: data.teamIds || [STATS_TEAM_ID],
                 isActive: data.isActive !== false,
@@ -76,9 +75,9 @@ export const Roster: React.FC = () => {
         playersData.sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
 
         setPlayers(playersData);
-        console.log(`✅ Loaded ${playersData.length} players with calculated stats`);
+        console.log(`✅ Loaded ${playersData.length} players from Stats app (Team: ${STATS_TEAM_ID})`);
       } catch (error) {
-        console.error('❌ Error fetching players:', error);
+        console.error('❌ Error fetching players from Stats app:', error);
       } finally {
         setLoading(false);
       }
@@ -115,183 +114,155 @@ export const Roster: React.FC = () => {
         </div>
       </section>
 
-      {/* 👥 DYNAMIC PLAYER CARDS */}
+      {/* 👥 PLAYERS GRID */}
       <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {players.map((player) => (
-            <div
-              key={player.id}
-              onClick={() => setSelectedPlayer(player)}
-              className="bg-white rounded-3xl p-8 shadow-tiger-lg hover:shadow-tiger-2xl hover:-translate-y-4 transition-all cursor-pointer group relative overflow-hidden"
-            >
-              {/* Bowling pin decoration */}
-              <div className="absolute top-2 right-2 text-6xl opacity-5 group-hover:opacity-10 group-hover:rotate-12 transition-all">
-                🎳
-              </div>
-
-              <div className="flex items-start gap-6 mb-6">
-                {/* Player Photo or Willard Logo */}
-                <div className="group-hover:scale-110 transition-transform">
-                  {player.photoURL ? (
-                    <img
-                      src={player.photoURL}
-                      alt={player.name}
-                      className="w-20 h-20 rounded-full object-cover shadow-tiger-lg"
-                    />
-                  ) : (
-                    <WillardLogo size={80} className="shadow-tiger-lg" />
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <h3 className="text-3xl font-black text-willard-black mb-2 group-hover:scale-105 transition-transform">
-                    {player.name}
-                  </h3>
-                  <div className="inline-block bg-gradient-to-r from-willard-grey-800 to-willard-black text-white px-4 py-2 rounded-full text-sm font-bold shadow-tiger">
-                    Grade {player.grade}
-                  </div>
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-willard-grey-100 to-willard-grey-200 rounded-2xl p-4 shadow-inner">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-bold text-willard-grey-600 uppercase tracking-wide">
-                      Average
-                    </span>
-                    <span className="font-black text-willard-black text-3xl">
-                      {player.averageScore > 0 ? player.averageScore : (
-                        <span className="text-lg text-willard-grey-400">Pre-Season</span>
-                      )}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-willard-grey-50 to-willard-grey-100 rounded-2xl p-4 shadow-inner">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-bold text-willard-grey-600 uppercase tracking-wide">
-                      High Game
-                    </span>
-                    <span className="font-black text-willard-grey-800 text-3xl">
-                      {player.highGame > 0 ? player.highGame : (
-                        <span className="text-lg text-willard-grey-400">Pre-Season</span>
-                      )}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* View Button */}
-              <div className="mt-6 pt-6 border-t-2 border-willard-grey-200">
-                <button className="text-willard-black text-sm font-black hover:text-willard-grey-700 flex items-center gap-2 group-hover:gap-4 transition-all uppercase tracking-wide">
-                  View Full Stats
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {players.length === 0 && (
+        {players.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-9xl mb-6">🎳</div>
-            <h3 className="text-3xl font-black text-willard-grey-700 mb-4">
-              No Players Yet
-            </h3>
-            <p className="text-xl text-willard-grey-500">
-              Check back soon to meet our team!
-            </p>
+            <div className="text-6xl mb-4">🎳</div>
+            <p className="text-2xl text-willard-grey-600 font-bold">No players found</p>
+            <p className="text-willard-grey-500 mt-2">Check back soon!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {players.map((player) => (
+              <div
+                key={player.id}
+                className="bg-white rounded-2xl shadow-tiger-lg hover:shadow-tiger-2xl transition-all hover:scale-105 overflow-hidden cursor-pointer"
+                onClick={() => setSelectedPlayer(player)}
+              >
+                {/* Player Header */}
+                <div className="bg-gradient-to-br from-willard-black to-willard-grey-900 text-white p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl font-black shadow-lg">
+                      {player.jerseyNumber || player.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black">{player.name}</h3>
+                      {player.grade && (
+                        <p className="text-willard-grey-300 text-sm font-semibold">
+                          Grade {player.grade}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Player Stats */}
+                <div className="p-6">
+                  <div className="grid grid-cols-3 gap-4 mb-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-black text-willard-black">
+                        {player.averageScore || '-'}
+                      </div>
+                      <div className="text-xs text-willard-grey-600 font-semibold uppercase">
+                        Average
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-black text-willard-black">
+                        {player.highGame || '-'}
+                      </div>
+                      <div className="text-xs text-willard-grey-600 font-semibold uppercase">
+                        High Game
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-black text-willard-black">
+                        {player.gamesPlayed || 0}
+                      </div>
+                      <div className="text-xs text-willard-grey-600 font-semibold uppercase">
+                        Games
+                      </div>
+                    </div>
+                  </div>
+
+                  {player.bio && (
+                    <p className="text-sm text-willard-grey-700 leading-relaxed line-clamp-2">
+                      {player.bio}
+                    </p>
+                  )}
+
+                  <button className="mt-4 w-full bg-willard-black text-white py-2 px-4 rounded-lg font-semibold hover:bg-willard-grey-900 transition flex items-center justify-center gap-2">
+                    View Profile
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </section>
 
-      {/* 🔥 PLAYER DETAIL MODAL */}
+      {/* Player Detail Modal */}
       {selectedPlayer && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-6 z-50 backdrop-blur-sm animate-in fade-in"
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           onClick={() => setSelectedPlayer(null)}
         >
           <div
-            className="bg-white rounded-3xl p-10 max-w-lg w-full shadow-tiger-2xl transform scale-100 animate-in zoom-in"
+            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Player Info */}
-            <div className="text-center mb-8">
-              <div className="mb-6 flex justify-center">
-                {selectedPlayer.photoURL ? (
-                  <img
-                    src={selectedPlayer.photoURL}
-                    alt={selectedPlayer.name}
-                    className="w-32 h-32 rounded-full object-cover shadow-tiger-xl"
-                  />
-                ) : (
-                  <WillardLogo size={128} className="shadow-tiger-xl" />
-                )}
-              </div>
-              <h3 className="text-5xl font-black text-willard-black mb-4">
-                {selectedPlayer.name}
-              </h3>
-              <div className="inline-block bg-gradient-to-r from-willard-grey-900 to-willard-black text-white px-6 py-3 rounded-full font-black text-lg shadow-tiger-lg">
-                Grade {selectedPlayer.grade}
-              </div>
-            </div>
-
-            {/* Detailed Stats */}
-            <div className="space-y-4">
-              <div className="bg-gradient-to-br from-willard-grey-900 to-willard-black text-white rounded-3xl p-8 shadow-tiger-xl">
-                <div className="text-sm font-bold mb-2 opacity-90 uppercase tracking-wide">
-                  🎯 Bowling Average
+            {/* Modal Header */}
+            <div className="bg-gradient-to-br from-willard-black to-willard-grey-900 text-white p-8">
+              <div className="flex items-center gap-6">
+                <div className="w-24 h-24 bg-white bg-opacity-20 backdrop-blur-sm rounded-full flex items-center justify-center text-4xl font-black shadow-xl">
+                  {selectedPlayer.jerseyNumber || selectedPlayer.name.charAt(0).toUpperCase()}
                 </div>
-                <div className="text-6xl font-black">
-                  {selectedPlayer.averageScore > 0 ? selectedPlayer.averageScore : (
-                    <span className="text-3xl opacity-60">Pre-Season</span>
+                <div>
+                  <h2 className="text-3xl font-black mb-2">{selectedPlayer.name}</h2>
+                  {selectedPlayer.grade && (
+                    <p className="text-willard-grey-300 text-lg font-semibold">
+                      Grade {selectedPlayer.grade}
+                    </p>
                   )}
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-willard-grey-800 to-willard-grey-900 text-white rounded-3xl p-8 shadow-tiger-xl">
-                <div className="text-sm font-bold mb-2 opacity-90 uppercase tracking-wide">
-                  🔥 High Game
-                </div>
-                <div className="text-6xl font-black">
-                  {selectedPlayer.highGame > 0 ? selectedPlayer.highGame : (
-                    <span className="text-3xl opacity-60">Pre-Season</span>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-willard-grey-700 to-willard-grey-800 text-white rounded-3xl p-6 shadow-tiger-lg">
-                  <div className="text-xs font-bold mb-1 opacity-90 uppercase tracking-wide">
-                    Games
-                  </div>
-                  <div className="text-4xl font-black">
-                    {selectedPlayer.gamesPlayed > 0 ? selectedPlayer.gamesPlayed : (
-                      <span className="text-2xl opacity-60">0</span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-willard-grey-600 to-willard-grey-700 text-white rounded-3xl p-6 shadow-tiger-lg">
-                  <div className="text-xs font-bold mb-1 opacity-90 uppercase tracking-wide">
-                    Grade
-                  </div>
-                  <div className="text-4xl font-black">
-                    {selectedPlayer.grade ? `${selectedPlayer.grade}` : 'N/A'}
-                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedPlayer(null)}
-              className="mt-8 w-full bg-gradient-to-r from-willard-black to-willard-grey-800 text-white py-5 rounded-2xl font-black text-xl hover:shadow-tiger-xl transition-all hover:scale-105"
-            >
-              CLOSE
-            </button>
+            {/* Modal Body */}
+            <div className="p-8">
+              <div className="grid grid-cols-3 gap-6 mb-8">
+                <div className="text-center p-4 bg-willard-grey-50 rounded-xl">
+                  <div className="text-4xl font-black text-willard-black mb-2">
+                    {selectedPlayer.averageScore || '-'}
+                  </div>
+                  <div className="text-sm text-willard-grey-600 font-semibold uppercase">
+                    Average Score
+                  </div>
+                </div>
+                <div className="text-center p-4 bg-willard-grey-50 rounded-xl">
+                  <div className="text-4xl font-black text-willard-black mb-2">
+                    {selectedPlayer.highGame || '-'}
+                  </div>
+                  <div className="text-sm text-willard-grey-600 font-semibold uppercase">
+                    High Game
+                  </div>
+                </div>
+                <div className="text-center p-4 bg-willard-grey-50 rounded-xl">
+                  <div className="text-4xl font-black text-willard-black mb-2">
+                    {selectedPlayer.gamesPlayed || 0}
+                  </div>
+                  <div className="text-sm text-willard-grey-600 font-semibold uppercase">
+                    Games Played
+                  </div>
+                </div>
+              </div>
+
+              {selectedPlayer.bio && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-black text-willard-black mb-3">About</h3>
+                  <p className="text-willard-grey-700 leading-relaxed">{selectedPlayer.bio}</p>
+                </div>
+              )}
+
+              <button
+                onClick={() => setSelectedPlayer(null)}
+                className="w-full bg-willard-black text-white py-3 px-6 rounded-lg font-bold hover:bg-willard-grey-900 transition"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
