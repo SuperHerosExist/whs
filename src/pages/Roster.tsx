@@ -418,6 +418,71 @@ export const Roster: React.FC = () => {
                 );
               })()}
 
+              {/* Game History */}
+              {(() => {
+                const playerStats = playerStatsMap.get(selectedPlayer.id);
+                if (!playerStats || !playerStats.allGames || playerStats.allGames.length === 0) return null;
+
+                // Sort games by date (most recent first)
+                const sortedGames = [...playerStats.allGames].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                return (
+                  <div className="mb-8">
+                    <h3 className="text-lg font-black text-willard-black mb-4">Game History</h3>
+                    <div className="bg-willard-grey-50 rounded-xl p-4 max-h-96 overflow-y-auto">
+                      <div className="space-y-2">
+                        {sortedGames.map((game, index) => {
+                          const isAboveAverage = game.score >= selectedPlayer.averageScore;
+                          const difference = game.score - selectedPlayer.averageScore;
+
+                          return (
+                            <div
+                              key={index}
+                              className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                                isAboveAverage ? 'bg-green-50 border border-green-200' : 'bg-white border border-willard-grey-200'
+                              }`}
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className="text-center">
+                                  <div className={`text-3xl font-black ${isAboveAverage ? 'text-green-600' : 'text-willard-grey-700'}`}>
+                                    {game.score}
+                                  </div>
+                                  {game.date && (
+                                    <div className="text-xs text-willard-grey-500 mt-1">
+                                      {game.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex flex-col">
+                                  <div className={`text-sm font-bold ${isAboveAverage ? 'text-green-700' : 'text-willard-grey-600'}`}>
+                                    {isAboveAverage ? (
+                                      <>+{difference} above average</>
+                                    ) : (
+                                      <>{difference} from average</>
+                                    )}
+                                  </div>
+                                  {game.strikeCount !== undefined && game.spareCount !== undefined && (
+                                    <div className="text-xs text-willard-grey-500 mt-1">
+                                      {game.strikeCount} strikes, {game.spareCount} spares
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              {isAboveAverage && (
+                                <div className="text-2xl">🎯</div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="mt-3 text-sm text-willard-grey-600 text-center">
+                      Showing all {sortedGames.length} games
+                    </div>
+                  </div>
+                );
+              })()}
+
               {selectedPlayer.bio && (
                 <div className="mb-6">
                   <h3 className="text-lg font-black text-willard-black mb-3">About</h3>

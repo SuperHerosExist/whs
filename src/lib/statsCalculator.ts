@@ -8,6 +8,16 @@
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { statsDb, STATS_TEAM_ID } from './statsFirebase';
 
+export interface GameDetail {
+  score: number;
+  weekDate?: string;
+  timestamp?: number;
+  strikeCount?: number;
+  spareCount?: number;
+  splitCount?: number;
+  date?: Date; // Formatted date for display
+}
+
 export interface PlayerGameStats {
   playerId: string;
   playerName: string;
@@ -20,6 +30,7 @@ export interface PlayerGameStats {
   spares: number;
   splits: number;
   recentGames: number[]; // Last 5 games
+  allGames: GameDetail[]; // All individual games with details
 
   // HYPE STATS - Series & Achievements
   highSeries: number; // Best 3-game series total
@@ -97,6 +108,7 @@ export async function calculatePlayerStats(playerId: string): Promise<PlayerGame
         spares: 0,
         splits: 0,
         recentGames: [],
+        allGames: [],
         highSeries: 0,
         totalSeries: 0,
         gamesOver25: 0,
@@ -162,6 +174,7 @@ export async function calculatePlayerStats(playerId: string): Promise<PlayerGame
         spares: 0,
         splits: 0,
         recentGames: [],
+        allGames: [],
         highSeries: 0,
         totalSeries: 0,
         gamesOver25: 0,
@@ -267,6 +280,12 @@ export async function calculatePlayerStats(playerId: string): Promise<PlayerGame
 
     console.log(`✅ Stats calculated for ${playerName}: ${games} games, ${average} avg, ${highGame} high, ${highSeries} series`);
 
+    // Convert allGames to GameDetail format with dates
+    const gamesWithDates: GameDetail[] = allGames.map(game => ({
+      ...game,
+      date: game.timestamp ? new Date(game.timestamp) : undefined,
+    }));
+
     return {
       playerId,
       playerName,
@@ -279,6 +298,7 @@ export async function calculatePlayerStats(playerId: string): Promise<PlayerGame
       spares: totalSpares,
       splits: totalSplits,
       recentGames,
+      allGames: gamesWithDates,
       highSeries,
       totalSeries,
       gamesOver25,
