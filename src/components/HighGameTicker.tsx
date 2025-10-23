@@ -58,36 +58,36 @@ export const HighGameTicker: React.FC = () => {
   const currentGame = highGames[currentIndex];
 
   return (
-    <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white py-4 overflow-hidden shadow-lg">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between gap-6">
+    <div className="bg-black text-white py-2 md:py-3 overflow-hidden shadow-lg border-t-2 border-yellow-500">
+      <div className="max-w-7xl mx-auto px-3 md:px-6">
+        <div className="flex items-center justify-between gap-2 md:gap-6">
           {/* ESPN-style ticker header */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="bg-white text-red-700 px-3 py-1 rounded font-black text-sm uppercase tracking-wider">
+          <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+            <div className="bg-yellow-500 text-black px-2 md:px-3 py-0.5 md:py-1 rounded font-black text-xs md:text-sm uppercase tracking-wider">
               High Games
             </div>
-            <Trophy className="w-5 h-5 text-yellow-300" />
+            <Trophy className="w-4 h-4 md:w-5 md:h-5 text-yellow-500" />
           </div>
 
           {/* Scrolling content */}
           <div className="flex-1 overflow-hidden">
             <div
               key={currentIndex}
-              className="animate-slide-up flex items-center gap-4 text-lg font-bold"
+              className="animate-slide-up flex items-center gap-2 md:gap-4 text-sm md:text-base font-bold"
             >
-              <Zap className="w-5 h-5 text-yellow-300 flex-shrink-0" />
+              <Zap className="w-4 h-4 md:w-5 md:h-5 text-yellow-500 flex-shrink-0" />
               <span className="truncate">
-                <span className="text-yellow-300">{currentGame.playerName}</span>
+                <span className="text-yellow-500">{currentGame.playerName}</span>
                 {' '}rolled a{' '}
-                <span className="text-3xl font-black">{currentGame.score}</span>
+                <span className="text-xl md:text-2xl font-black">{currentGame.score}</span>
               </span>
             </div>
           </div>
 
           {/* Position indicator */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <TrendingUp className="w-4 h-4" />
-            <span className="text-sm font-semibold">
+          <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+            <TrendingUp className="w-3 h-3 md:w-4 md:h-4 text-yellow-500" />
+            <span className="text-xs md:text-sm font-semibold">
               {currentIndex + 1}/{highGames.length}
             </span>
           </div>
