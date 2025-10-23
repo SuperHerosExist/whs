@@ -3,11 +3,9 @@ import { doc, getDoc } from 'firebase/firestore';
 import { statsDb, STATS_TEAM_ID } from '@/lib/statsFirebase';
 import { getAllPlayerStats, type PlayerGameStats } from '@/lib/statsCalculator';
 import type { Player } from '@/types';
-import { Users, ChevronRight, LayoutGrid, List, ArrowUpDown, ArrowUp, ArrowDown, Medal } from 'lucide-react';
-// import { WillardLogo } from '@/components/WillardLogo';
+import { ArrowUpDown, ArrowUp, ArrowDown, Medal } from 'lucide-react';
 
-type ViewMode = 'grid' | 'table';
-type SortField = 'name' | 'average' | 'highGame' | 'games';
+type SortField = 'name' | 'average' | 'highGame' | 'highSeries';
 type SortDirection = 'asc' | 'desc';
 
 export const Roster: React.FC = () => {
@@ -15,7 +13,6 @@ export const Roster: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [playerStatsMap, setPlayerStatsMap] = useState<Map<string, PlayerGameStats>>(new Map());
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [sortField, setSortField] = useState<SortField>('average');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -126,9 +123,10 @@ export const Roster: React.FC = () => {
         aVal = a.highGame || 0;
         bVal = b.highGame || 0;
         break;
-      case 'games':
-        aVal = a.gamesPlayed || 0;
-        bVal = b.gamesPlayed || 0;
+      case 'highSeries':
+        // Get high series from playerStatsMap
+        aVal = playerStatsMap.get(a.id)?.highSeries || 0;
+        bVal = playerStatsMap.get(b.id)?.highSeries || 0;
         break;
     }
 
@@ -159,44 +157,16 @@ export const Roster: React.FC = () => {
       {/* 🏆 BOLD HEADER */}
       <section className="bg-gradient-to-br from-willard-black via-willard-grey-900 to-willard-grey-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-6">
-              <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
-                <Users className="w-16 h-16" />
-              </div>
-              <div>
-                <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-wider mb-8">TEAM ROSTER
-                </h1>
-                <p className="text-2xl md:text-3xl text-willard-grey-300 mt-2 font-bold">
-                  Meet our amazing bowlers 🎳
-                </p>
-              </div>
+          <div className="flex items-center gap-6">
+            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
+              <img
+                src="/assets/logos/tiger-logo.jpg"
+                alt="Willard Tigers"
+                className="w-16 h-16 object-contain"
+              />
             </div>
-
-            {/* View Toggle */}
-            <div className="flex gap-2 bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-2">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-3 rounded-lg transition-all ${
-                  viewMode === 'grid'
-                    ? 'bg-white text-willard-black shadow-lg'
-                    : 'text-white hover:bg-white hover:bg-opacity-20'
-                }`}
-                title="Grid View"
-              >
-                <LayoutGrid className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setViewMode('table')}
-                className={`p-3 rounded-lg transition-all ${
-                  viewMode === 'table'
-                    ? 'bg-white text-willard-black shadow-lg'
-                    : 'text-white hover:bg-white hover:bg-opacity-20'
-                }`}
-                title="Table View"
-              >
-                <List className="w-5 h-5" />
-              </button>
+            <div>
+              <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-wider">TEAM ROSTER</h1>
             </div>
           </div>
         </div>
@@ -210,7 +180,7 @@ export const Roster: React.FC = () => {
             <p className="text-2xl text-willard-grey-600 font-bold">No players found</p>
             <p className="text-willard-grey-500 mt-2">Check back soon!</p>
           </div>
-        ) : viewMode === 'table' ? (
+        ) : (
           /* TABLE VIEW */
           <div className="bg-white rounded-2xl shadow-tiger-lg overflow-hidden">
             <div className="overflow-x-auto">
@@ -225,6 +195,11 @@ export const Roster: React.FC = () => {
                         Player
                         <SortIcon field="name" />
                       </button>
+                    </th>
+                    <th className="text-center py-4 px-4">
+                      <div className="flex items-center justify-center gap-2 font-black text-sm uppercase tracking-wider">
+                        Medals
+                      </div>
                     </th>
                     <th className="text-center py-4 px-4">
                       <button
@@ -246,135 +221,98 @@ export const Roster: React.FC = () => {
                     </th>
                     <th className="text-center py-4 px-4">
                       <button
-                        onClick={() => handleSort('games')}
+                        onClick={() => handleSort('highSeries')}
                         className="flex items-center justify-center gap-2 font-black text-sm uppercase tracking-wider hover:text-willard-grey-300 transition mx-auto"
                       >
-                        Games
-                        <SortIcon field="games" />
+                        High Series
+                        <SortIcon field="highSeries" />
                       </button>
                     </th>
-                    <th className="py-4 px-6"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-willard-grey-200">
-                  {sortedPlayers.map((player) => (
-                    <tr
-                      key={player.id}
-                      className="hover:bg-willard-grey-50 transition-colors"
-                    >
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-willard-black to-willard-grey-900 text-white rounded-full flex items-center justify-center text-lg font-black shadow-lg flex-shrink-0">
-                            {player.jerseyNumber || player.name.charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="font-black text-willard-black">{player.name}</div>
-                            {player.grade && (
-                              <div className="text-sm text-willard-grey-600 font-semibold">
-                                Grade {player.grade}
+                  {sortedPlayers.map((player) => {
+                    const playerStats = playerStatsMap.get(player.id);
+                    const totalBronze = (playerStats?.gamesOver25 || 0) + (playerStats?.seriesOver25 || 0);
+                    const totalSilver = (playerStats?.gamesOver50 || 0) + (playerStats?.seriesOver50 || 0);
+                    const totalGold = (playerStats?.gamesOver100 || 0) + (playerStats?.seriesOver100 || 0);
+                    const highSeries = playerStats?.highSeries || 0;
+
+                    return (
+                      <tr
+                        key={player.id}
+                        className="hover:bg-willard-grey-50 transition-colors cursor-pointer"
+                        onClick={() => setSelectedPlayer(player)}
+                      >
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-4">
+                            {player.photoURL ? (
+                              <img
+                                src={player.photoURL}
+                                alt={player.name}
+                                className="w-12 h-12 rounded-full object-cover shadow-lg flex-shrink-0"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 bg-gradient-to-br from-willard-black to-willard-grey-900 text-white rounded-full flex items-center justify-center text-lg font-black shadow-lg flex-shrink-0">
+                                {player.name.charAt(0).toUpperCase()}
                               </div>
                             )}
+                            <div>
+                              <div className="font-black text-willard-black">{player.name}</div>
+                              {player.grade && (
+                                <div className="text-sm text-willard-grey-600 font-semibold">
+                                  Grade {player.grade}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="text-2xl font-black text-willard-black">
-                          {player.averageScore || '-'}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="text-2xl font-black text-willard-black">
-                          {player.highGame || '-'}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="text-xl font-black text-willard-grey-700">
-                          {player.gamesPlayed || 0}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6">
-                        <button
-                          onClick={() => setSelectedPlayer(player)}
-                          className="bg-willard-black text-white py-2 px-4 rounded-lg font-semibold hover:bg-willard-grey-900 transition flex items-center gap-2 whitespace-nowrap"
-                        >
-                          View
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center justify-center gap-2">
+                            {totalGold > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-lg">🥇</span>
+                                <span className="text-sm font-black text-yellow-600">{totalGold}</span>
+                              </div>
+                            )}
+                            {totalSilver > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-lg">🥈</span>
+                                <span className="text-sm font-black text-gray-600">{totalSilver}</span>
+                              </div>
+                            )}
+                            {totalBronze > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-lg">🥉</span>
+                                <span className="text-sm font-black text-amber-700">{totalBronze}</span>
+                              </div>
+                            )}
+                            {totalGold === 0 && totalSilver === 0 && totalBronze === 0 && (
+                              <span className="text-willard-grey-400">-</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-center">
+                          <span className="text-2xl font-black text-willard-black">
+                            {player.averageScore || '-'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-center">
+                          <span className="text-2xl font-black text-willard-black">
+                            {player.highGame || '-'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-center">
+                          <span className="text-2xl font-black text-willard-black">
+                            {highSeries || '-'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
-          </div>
-        ) : (
-          /* GRID VIEW */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sortedPlayers.map((player) => (
-              <div
-                key={player.id}
-                className="bg-white rounded-2xl shadow-tiger-lg hover:shadow-tiger-2xl transition-all hover:scale-105 overflow-hidden cursor-pointer"
-                onClick={() => setSelectedPlayer(player)}
-              >
-                {/* Player Header */}
-                <div className="bg-gradient-to-br from-willard-black to-willard-grey-900 text-white p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl font-black shadow-lg">
-                      {player.jerseyNumber || player.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-black">{player.name}</h3>
-                      {player.grade && (
-                        <p className="text-willard-grey-300 text-sm font-semibold">
-                          Grade {player.grade}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Player Stats */}
-                <div className="p-6">
-                  <div className="grid grid-cols-3 gap-4 mb-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-black text-willard-black">
-                        {player.averageScore || '-'}
-                      </div>
-                      <div className="text-xs text-willard-grey-600 font-semibold uppercase">
-                        Average
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-black text-willard-black">
-                        {player.highGame || '-'}
-                      </div>
-                      <div className="text-xs text-willard-grey-600 font-semibold uppercase">
-                        High Game
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-black text-willard-black">
-                        {player.gamesPlayed || 0}
-                      </div>
-                      <div className="text-xs text-willard-grey-600 font-semibold uppercase">
-                        Games
-                      </div>
-                    </div>
-                  </div>
-
-                  {player.bio && (
-                    <p className="text-sm text-willard-grey-700 leading-relaxed line-clamp-2">
-                      {player.bio}
-                    </p>
-                  )}
-
-                  <button className="mt-4 w-full bg-willard-black text-white py-2 px-4 rounded-lg font-semibold hover:bg-willard-grey-900 transition flex items-center justify-center gap-2">
-                    View Profile
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
         )}
       </section>
