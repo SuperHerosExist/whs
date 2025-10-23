@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { calculateTeamStats, getAllPlayerStats } from '@/lib/statsCalculator';
+import { generateTeamInsights, type AIInsight, type TeamStatsForAI } from '@/lib/gemini';
 import type { Player } from '@/types';
-import { Trophy, Target, Zap, Award, BarChart3 } from 'lucide-react';
+import { Trophy, Target, Zap, Award, BarChart3, Sparkles, TrendingUp, AlertCircle, Lightbulb } from 'lucide-react';
 
 export const Stats: React.FC = () => {
   const [loading, setLoading] = useState(true);
+  const [loadingInsights, setLoadingInsights] = useState(false);
   const [teamStats, setTeamStats] = useState({
     teamAverage: 0,
     highGame: 0,
+    highGamePlayer: '',
     totalGames: 0,
     activePlayers: 0,
   });
   const [topPerformers, setTopPerformers] = useState<Player[]>([]);
+  const [aiInsights, setAiInsights] = useState<AIInsight[]>([]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -22,6 +26,7 @@ export const Stats: React.FC = () => {
         setTeamStats({
           teamAverage: teamStatsData.teamAverage,
           highGame: teamStatsData.highIndividualGame,
+          highGamePlayer: teamStatsData.highIndividualGamePlayer,
           totalGames: teamStatsData.totalGames,
           activePlayers: teamStatsData.totalPlayers,
         });
@@ -54,6 +59,28 @@ export const Stats: React.FC = () => {
 
         setTopPerformers(topPerformersData);
         console.log(`✅ Stats page loaded: ${teamStatsData.totalPlayers} players, ${teamStatsData.teamAverage} avg`);
+
+        // Generate AI insights if we have stats
+        if (teamStatsData.totalGames > 0) {
+          setLoadingInsights(true);
+          const statsForAI: TeamStatsForAI = {
+            teamAverage: teamStatsData.teamAverage,
+            totalPlayers: teamStatsData.totalPlayers,
+            totalGames: teamStatsData.totalGames,
+            highGame: teamStatsData.highIndividualGame,
+            highGamePlayer: teamStatsData.highIndividualGamePlayer,
+            topPerformers: allPlayerStats.slice(0, 5).map(s => ({
+              name: s.playerName,
+              average: s.average,
+              highGame: s.highGame,
+              games: s.games,
+            })),
+          };
+
+          const insights = await generateTeamInsights(statsForAI);
+          setAiInsights(insights);
+          setLoadingInsights(false);
+        }
       } catch (error) {
         console.error('❌ Error fetching stats:', error);
       } finally {
@@ -71,6 +98,36 @@ export const Stats: React.FC = () => {
       </div>
     );
   }
+
+  const getInsightIcon = (category: AIInsight['category']) => {
+    switch (category) {
+      case 'strengths':
+        return Trophy;
+      case 'improvements':
+        return Target;
+      case 'trends':
+        return TrendingUp;
+      case 'recommendations':
+        return Lightbulb;
+      default:
+        return AlertCircle;
+    }
+  };
+
+  const getInsightColor = (category: AIInsight['category']) => {
+    switch (category) {
+      case 'strengths':
+        return 'from-green-600 to-green-800';
+      case 'improvements':
+        return 'from-orange-600 to-orange-800';
+      case 'trends':
+        return 'from-blue-600 to-blue-800';
+      case 'recommendations':
+        return 'from-purple-600 to-purple-800';
+      default:
+        return 'from-gray-600 to-gray-800';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white">
@@ -114,6 +171,63 @@ export const Stats: React.FC = () => {
           />
         </div>
       </section>
+
+      {/* AI-Powered Insights */}
+      {teamStats.totalGames > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex items-center gap-3 mb-8">
+            <Sparkles className="w-8 h-8 text-purple-600" />
+            <h2 className="text-3xl font-display font-black text-tiger-primary-black">
+              AI-Powered Insights
+            </h2>
+          </div>
+
+          {loadingInsights ? (
+            <div className="bg-white rounded-2xl shadow-tiger-lg p-12 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+              <p className="text-tiger-neutral-600">Analyzing team performance...</p>
+            </div>
+          ) : aiInsights.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-6">
+              {aiInsights.map((insight, index) => {
+                const Icon = getInsightIcon(insight.category);
+                const color = getInsightColor(insight.category);
+                return (
+                  <div
+                    key={index}
+                    className="bg-white rounded-2xl shadow-tiger-lg p-6 hover:shadow-xl transition-shadow"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${color} flex-shrink-0`}>
+                        <Icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-display font-black text-tiger-primary-black">
+                            {insight.title}
+                          </h3>
+                          <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                            insight.confidence === 'high'
+                              ? 'bg-green-100 text-green-800'
+                              : insight.confidence === 'medium'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {insight.confidence}
+                          </span>
+                        </div>
+                        <p className="text-tiger-neutral-700 leading-relaxed">
+                          {insight.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
+        </section>
+      )}
 
       {/* Top Performers */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -176,7 +290,7 @@ export const Stats: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="px-3 py-1 bg-tiger-neutral-100 text-tiger-neutral-700 rounded-full text-xs font-bold">
-                          {player.grade}th
+                          {player.grade || '--'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -223,7 +337,7 @@ export const Stats: React.FC = () => {
             Detailed Statistics & Analytics
           </h2>
           <p className="text-lg text-tiger-neutral-300 mb-8 max-w-2xl mx-auto">
-            Access comprehensive bowling statistics, frame-by-frame analysis, and AI-powered insights
+            Access comprehensive bowling statistics, frame-by-frame analysis, and advanced performance metrics
             through our dedicated Stats application.
           </p>
           <a
