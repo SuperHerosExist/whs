@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
-import type { Player } from '@/types';
+import { type Player } from '@/types';
 import { User, Camera, Save, TrendingUp, Trophy, BarChart3 } from 'lucide-react';
 
 export const PlayerDashboard: React.FC = () => {
@@ -21,7 +21,7 @@ export const PlayerDashboard: React.FC = () => {
     phone: '',
     grade: '',
     graduationYear: new Date().getFullYear(),
-    jerseyNumber: '',
+    favoriteBallBrand: '',
     bio: '',
   });
 
@@ -42,13 +42,24 @@ export const PlayerDashboard: React.FC = () => {
 
           setPlayer(playerData);
           setProfileData({
-            name: playerData.name || '',
-            email: playerData.email || '',
+            name: playerData.name || currentUser.displayName || '',
+            email: playerData.email || currentUser.email || '',
             phone: currentUser.phone || '',
             grade: playerData.grade || '',
             graduationYear: playerData.graduationYear || new Date().getFullYear(),
-            jerseyNumber: playerData.jerseyNumber || '',
+            favoriteBallBrand: (playerData as any).favoriteBallBrand || '',
             bio: playerData.bio || '',
+          });
+        } else {
+          // No player document exists, use auth data
+          setProfileData({
+            name: currentUser.displayName || '',
+            email: currentUser.email || '',
+            phone: currentUser.phone || '',
+            grade: '',
+            graduationYear: new Date().getFullYear(),
+            favoriteBallBrand: '',
+            bio: '',
           });
         }
       } catch (error) {
@@ -123,21 +134,42 @@ export const PlayerDashboard: React.FC = () => {
     setErrorMessage('');
 
     try {
-      await updateDoc(doc(db, 'players', currentUser.uid), {
+      const playerRef = doc(db, 'players', currentUser.uid);
+      const playerDoc = await getDoc(playerRef);
+
+      const updateData = {
         name: profileData.name,
         email: profileData.email,
         grade: profileData.grade,
         graduationYear: parseInt(profileData.graduationYear.toString()),
-        jerseyNumber: profileData.jerseyNumber,
+        favoriteBallBrand: profileData.favoriteBallBrand,
         bio: profileData.bio,
         updatedAt: serverTimestamp(),
-      });
+      };
+
+      if (playerDoc.exists()) {
+        // Update existing player document
+        await updateDoc(playerRef, updateData);
+      } else {
+        // Create new player document with required fields
+        await setDoc(playerRef, {
+          ...updateData,
+          uid: currentUser.uid,
+          programId: 'willard-tigers',
+          averageScore: 0,
+          highGame: 0,
+          gamesPlayed: 0,
+          teamIds: [],
+          isActive: true,
+          createdAt: serverTimestamp(),
+        });
+      }
 
       setSuccessMessage('Profile updated successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
 
       // Refresh player data
-      const updatedDoc = await getDoc(doc(db, 'players', currentUser.uid));
+      const updatedDoc = await getDoc(playerRef);
       if (updatedDoc.exists()) {
         setPlayer({
           id: updatedDoc.id,
@@ -148,7 +180,7 @@ export const PlayerDashboard: React.FC = () => {
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      setErrorMessage('Failed to update profile');
+      setErrorMessage('Failed to update profile. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -372,19 +404,27 @@ export const PlayerDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="jerseyNumber" className="block text-sm font-bold text-tiger-neutral-700 mb-2">
-                    Jersey Number (Optional)
+                  <label htmlFor="favoriteBallBrand" className="block text-sm font-bold text-tiger-neutral-700 mb-2">
+                    Favorite Ball Brand (Optional)
                   </label>
-                  <input
-                    type="text"
-                    id="jerseyNumber"
-                    name="jerseyNumber"
-                    value={profileData.jerseyNumber}
+                  <select
+                    id="favoriteBallBrand"
+                    name="favoriteBallBrand"
+                    value={profileData.favoriteBallBrand}
                     onChange={handleChange}
-                    maxLength={3}
                     className="w-full px-4 py-3 border border-tiger-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tiger-primary-black focus:border-transparent transition"
-                    placeholder="e.g., 23"
-                  />
+                  >
+                    <option value="">Select brand (optional)</option>
+                    <option value="Storm">Storm</option>
+                    <option value="Hammer">Hammer</option>
+                    <option value="Ebonite">Ebonite</option>
+                    <option value="Columbia 300">Columbia 300</option>
+                    <option value="Motiv">Motiv</option>
+                    <option value="Brunswick">Brunswick</option>
+                    <option value="Roto Grip">Roto Grip</option>
+                    <option value="Track">Track</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
 
                 <div>

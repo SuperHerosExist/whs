@@ -67,12 +67,14 @@ service cloud.firestore {
                       (playerId == request.auth.uid ||
                        (isCoach() && request.resource.data.programId == 'willard-tigers'));
 
-      // Players can update their own profile (limited fields - cannot change stats)
+      // Players can update their own profile (limited fields only)
+      // They can only update: name, email, grade, graduationYear, favoriteBallBrand, bio, photoURL, updatedAt
       // Coaches can update any player in their program
       allow update: if isAuthenticated() &&
-                      (playerId == request.auth.uid &&
-                       (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'programId', 'averageScore', 'highGame', 'gamesPlayed', 'teamIds']))) ||
-                       isCoach();
+                      (isCoach() ||
+                       (playerId == request.auth.uid &&
+                        request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['name', 'email', 'grade', 'graduationYear', 'favoriteBallBrand', 'bio', 'photoURL', 'updatedAt'])));
 
       // Only coaches can delete/deactivate players
       allow delete: if isCoach();

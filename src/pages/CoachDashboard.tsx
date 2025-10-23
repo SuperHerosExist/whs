@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, query, where, getDocs, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useAuth } from '@/contexts/AuthContext';
 import type { Player, ScheduleEvent } from '@/types';
 import {
   Users,
@@ -10,13 +11,18 @@ import {
   Edit2,
   Plus,
   BarChart3,
+  Shield,
 } from 'lucide-react';
+import { EditPlayerModal } from '@/components/modals/EditPlayerModal';
 
 export const CoachDashboard: React.FC = () => {
+  const { userRole } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'roster' | 'schedule'>('overview');
   const [players, setPlayers] = useState<Player[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<ScheduleEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const [teamStats, setTeamStats] = useState({
     totalPlayers: 0,
@@ -95,10 +101,45 @@ export const CoachDashboard: React.FC = () => {
     }
   };
 
+  const handleEditPlayer = (player: Player) => {
+    if (userRole !== 'coach') {
+      alert('Only coaches can edit player profiles');
+      return;
+    }
+    setEditingPlayer(player);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingPlayer(null);
+  };
+
+  const handleSavePlayer = async () => {
+    await fetchDashboardData();
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-tiger-primary-black"></div>
+      </div>
+    );
+  }
+
+  // Permission check: Only coaches can access this dashboard
+  if (userRole !== 'coach') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white flex items-center justify-center">
+        <div className="max-w-md text-center p-8">
+          <Shield className="w-16 h-16 text-tiger-neutral-400 mx-auto mb-4" />
+          <h1 className="text-2xl font-display font-black text-tiger-primary-black mb-2">
+            Access Restricted
+          </h1>
+          <p className="text-tiger-neutral-600">
+            Only coaches can access this dashboard. Please contact your coach if you believe this is an error.
+          </p>
+        </div>
       </div>
     );
   }
@@ -353,6 +394,7 @@ export const CoachDashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div className="flex items-center justify-end space-x-2">
                           <button
+                            onClick={() => handleEditPlayer(player)}
                             className="p-2 text-tiger-neutral-600 hover:text-tiger-primary-black hover:bg-tiger-neutral-100 rounded transition-colors"
                             title="Edit player"
                           >
@@ -393,6 +435,16 @@ export const CoachDashboard: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Edit Player Modal */}
+      {editingPlayer && (
+        <EditPlayerModal
+          player={editingPlayer}
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          onSave={handleSavePlayer}
+        />
+      )}
     </div>
   );
 };
