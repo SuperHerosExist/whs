@@ -25,7 +25,17 @@
       "Bash(echo:*)",
       "Bash(npm run dev:*)",
       "Bash(git restore:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(node scripts/fix-centering.js:*)",
+      "Bash(node scripts/fix-centering.cjs:*)",
+      "Bash(taskkill:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(node scripts/update-home-stats.cjs:*)",
+      "Bash(node scripts/update-roster-stats.cjs:*)",
+      "Bash(node scripts/update-stats-page.cjs:*)"
     ],
     "deny": [],
     "ask": []

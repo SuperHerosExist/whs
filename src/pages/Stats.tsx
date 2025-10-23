@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { statsDb, STATS_TEAM_ID } from '@/lib/statsFirebase';
+import { calculateTeamStats, getAllPlayerStats } from '@/lib/statsCalculator';
 import type { Player } from '@/types';
 import { Trophy, Target, Zap, Award, BarChart3 } from 'lucide-react';
 
@@ -17,80 +16,46 @@ export const Stats: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // First, get the team document to access playerIds array
-        const teamRef = doc(statsDb, 'teams', STATS_TEAM_ID);
-        const teamSnap = await getDoc(teamRef);
-
-        if (!teamSnap.exists()) {
-          console.error('❌ Team not found');
-          setLoading(false);
-          return;
-        }
-
-        const teamData = teamSnap.data();
-        const playerIds = teamData?.playerIds || [];
-
-        // Fetch each player individually by ID
-        const players: Player[] = [];
-        for (const playerId of playerIds) {
-          try {
-            const playerRef = doc(statsDb, 'players', playerId);
-            const playerSnap = await getDoc(playerRef);
-
-            if (playerSnap.exists()) {
-              const data = playerSnap.data();
-              players.push({
-                id: playerSnap.id,
-                uid: data.uid || playerSnap.id,
-                name: data.name || 'Unknown Player',
-                email: data.email || '',
-                grade: data.grade || '',
-                graduationYear: data.graduationYear || new Date().getFullYear(),
-                averageScore: data.average || 0,
-                highGame: data.highGame || 0,
-                gamesPlayed: data.gamesPlayed || 0,
-                programId: 'willard-tigers',
-                teamIds: data.teamIds || [STATS_TEAM_ID],
-                isActive: data.isActive !== false,
-                photoURL: data.photoURL || null,
-                jerseyNumber: data.jerseyNumber || '',
-                bio: data.bio || '',
-                createdAt: data.createdAt?.toDate() || new Date(),
-                updatedAt: data.updatedAt?.toDate() || new Date(),
-              });
-            }
-          } catch (playerError) {
-            console.warn(`⚠️  Could not fetch player ${playerId}:`, playerError);
-          }
-        }
-
-        // Calculate team statistics
-        const activePlayers = players.length;
-        const totalGamesPlayed = players.reduce((sum, p) => sum + (p.gamesPlayed || 0), 0);
-        const averageScores = players.filter(p => p.averageScore > 0).map(p => p.averageScore);
-        const teamAverage = averageScores.length > 0
-          ? Math.round(averageScores.reduce((sum, avg) => sum + avg, 0) / averageScores.length)
-          : 0;
-        const highGame = Math.max(...players.map(p => p.highGame || 0), 0);
+        // Get calculated team stats
+        const teamStatsData = await calculateTeamStats();
 
         setTeamStats({
-          teamAverage,
-          highGame,
-          totalGames: totalGamesPlayed,
-          activePlayers,
+          teamAverage: teamStatsData.teamAverage,
+          highGame: teamStatsData.highIndividualGame,
+          totalGames: teamStatsData.totalGames,
+          activePlayers: teamStatsData.totalPlayers,
         });
 
-        // Get top performers (sorted by average score)
-        const topPerf = [...players]
-          .filter(p => p.averageScore > 0 && p.gamesPlayed >= 3)
-          .sort((a, b) => b.averageScore - a.averageScore)
-          .slice(0, 10);
-        setTopPerformers(topPerf);
+        // Get all player stats and extract top performers
+        const allPlayerStats = await getAllPlayerStats();
 
-        console.log(`✅ Loaded stats for ${activePlayers} players from Stats app (Team: ${STATS_TEAM_ID})`);
-        console.log(`   Team Average: ${teamAverage}, High Game: ${highGame}, Total Games: ${totalGamesPlayed}`);
+        // Convert to Player type for display (top 5 by average)
+        const topPerformersData: Player[] = allPlayerStats
+          .slice(0, 5)
+          .map(stat => ({
+            id: stat.playerId,
+            uid: stat.playerId,
+            name: stat.playerName,
+            email: '',
+            grade: '',
+            graduationYear: new Date().getFullYear(),
+            averageScore: stat.average,
+            highGame: stat.highGame,
+            gamesPlayed: stat.games,
+            programId: 'willard-tigers',
+            teamIds: [],
+            isActive: true,
+            photoURL: undefined,
+            jerseyNumber: '',
+            bio: '',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          }));
+
+        setTopPerformers(topPerformersData);
+        console.log(`✅ Stats page loaded: ${teamStatsData.totalPlayers} players, ${teamStatsData.teamAverage} avg`);
       } catch (error) {
-        console.error('❌ Error fetching stats from Stats app:', error);
+        console.error('❌ Error fetching stats:', error);
       } finally {
         setLoading(false);
       }

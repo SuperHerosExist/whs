@@ -1,59 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { Trophy, Users, Target, TrendingUp, ChevronRight, Zap, Star, Calendar } from 'lucide-react';
-import { doc, getDoc } from 'firebase/firestore';
-import { statsDb, STATS_TEAM_ID } from '@/lib/statsFirebase';
+import { calculateTeamStats } from '@/lib/statsCalculator';
 import { practiceSchedule } from '@/config/practice-schedule';
 
 export const Home: React.FC = () => {
   const [liveStats, setLiveStats] = useState({
     teamAverage: 0,
     totalMembers: 0,
-    seasonsWins: 0,
-    championships: 0,
+    totalGames: 0,
+    highIndividualGame: 0,
   });
+  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLiveStats = async () => {
       try {
-        const teamRef = doc(statsDb, 'teams', STATS_TEAM_ID);
-        const teamSnap = await getDoc(teamRef);
+        // setLoading(true);
+        const teamStats = await calculateTeamStats();
 
-        if (!teamSnap.exists()) {
-          console.error('❌ Team not found');
-          return;
-        }
+        setLiveStats({
+          teamAverage: teamStats.teamAverage,
+          totalMembers: teamStats.totalPlayers,
+          totalGames: teamStats.totalGames,
+          highIndividualGame: teamStats.highIndividualGame,
+        });
 
-        const teamData = teamSnap.data();
-        const playerIds = teamData?.playerIds || [];
-
-        const players = [];
-        for (const playerId of playerIds) {
-          try {
-            const playerRef = doc(statsDb, 'players', playerId);
-            const playerSnap = await getDoc(playerRef);
-            if (playerSnap.exists()) {
-              players.push(playerSnap.data());
-            }
-          } catch (playerError) {
-            console.warn(`⚠️  Could not fetch player ${playerId}:`, playerError);
-          }
-        }
-
-        const totalMembers = players.length;
-        const averages = players.filter((p: any) => p.average > 0).map((p: any) => p.average);
-        const teamAverage = averages.length > 0
-          ? Math.round(averages.reduce((sum: number, avg: number) => sum + avg, 0) / averages.length)
-          : 0;
-
-        setLiveStats(prev => ({
-          ...prev,
-          teamAverage,
-          totalMembers,
-        }));
-
-        console.log(`✅ Home page: ${totalMembers} players, ${teamAverage} avg`);
+        console.log(`✅ Home: ${teamStats.totalPlayers} players, ${teamStats.teamAverage} avg, ${teamStats.totalGames} games`);
       } catch (error) {
         console.error('❌ Error fetching home stats:', error);
+      } finally {
+        // setLoading(false);
       }
     };
 
@@ -63,8 +39,8 @@ export const Home: React.FC = () => {
   const stats = [
     { icon: TrendingUp, label: 'Team Average', value: liveStats.teamAverage, emoji: '📊', gradient: 'from-willard-grey-800 to-willard-black' },
     { icon: Users, label: 'Active Athletes', value: liveStats.totalMembers, emoji: '👥', gradient: 'from-willard-grey-700 to-willard-grey-900' },
-    { icon: Trophy, label: 'Season Wins', value: liveStats.seasonsWins, emoji: '🏆', gradient: 'from-willard-grey-600 to-willard-grey-800' },
-    { icon: Target, label: 'Championships', value: liveStats.championships, emoji: '🥇', gradient: 'from-willard-black to-willard-grey-900' }
+    { icon: Trophy, label: 'Total Games', value: liveStats.totalGames, emoji: '🎳', gradient: 'from-willard-grey-600 to-willard-grey-800' },
+    { icon: Target, label: 'High Game', value: liveStats.highIndividualGame, emoji: '🎯', gradient: 'from-willard-black to-willard-grey-900' }
   ];
 
   return (
