@@ -16,8 +16,10 @@ export const Roster: React.FC = () => {
       try {
         // Fetch calculated stats to supplement player data
         const calculatedStats = await getAllPlayerStats();
+        console.log('📊 Calculated stats received:', calculatedStats);
         const statsMap = new Map();
         calculatedStats.forEach(stat => {
+          console.log(`   Player ${stat.playerName}: avg=${stat.average}, high=${stat.highGame}, games=${stat.games}`);
           statsMap.set(stat.playerId, stat);
         });
 
@@ -46,7 +48,7 @@ export const Roster: React.FC = () => {
               const calculatedStat = statsMap.get(playerId);
 
               // Use calculated stats if available, otherwise fall back to stored data
-              playersData.push({
+              const playerObj = {
                 id: playerSnap.id,
                 uid: data.uid || playerSnap.id,
                 name: data.name || 'Unknown Player',
@@ -64,7 +66,9 @@ export const Roster: React.FC = () => {
                 bio: data.bio || '',
                 createdAt: data.createdAt?.toDate() || new Date(),
                 updatedAt: data.updatedAt?.toDate() || new Date(),
-              });
+              };
+              console.log(`   👤 Player ${playerObj.name}: avg=${playerObj.averageScore}, high=${playerObj.highGame}, games=${playerObj.gamesPlayed}`);
+              playersData.push(playerObj);
             }
           } catch (playerError) {
             console.warn(`⚠️  Could not fetch player ${playerId}:`, playerError);

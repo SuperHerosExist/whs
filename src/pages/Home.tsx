@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Trophy, Users, Target, TrendingUp, ChevronRight, Zap, Star, Calendar } from 'lucide-react';
 import { calculateTeamStats } from '@/lib/statsCalculator';
 import { practiceSchedule } from '@/config/practice-schedule';
+import { HighGameTicker } from '@/components/HighGameTicker';
 
 export const Home: React.FC = () => {
   const [liveStats, setLiveStats] = useState({
@@ -10,12 +11,12 @@ export const Home: React.FC = () => {
     totalGames: 0,
     highIndividualGame: 0,
   });
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLiveStats = async () => {
       try {
-        // setLoading(true);
+        setLoading(true);
         const teamStats = await calculateTeamStats();
 
         setLiveStats({
@@ -29,7 +30,7 @@ export const Home: React.FC = () => {
       } catch (error) {
         console.error('❌ Error fetching home stats:', error);
       } finally {
-        // setLoading(false);
+        setLoading(false);
       }
     };
 
@@ -111,6 +112,9 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* 🔥 ESPN-STYLE HIGH GAME TICKER */}
+      <HighGameTicker />
+
       {/* 📊 STATS GRID - LIVE STATS */}
       <section className="w-full bg-white py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -130,8 +134,10 @@ export const Home: React.FC = () => {
                 </div>
 
                 <div className="text-center mb-4 relative z-10">
-                  {stat.label === 'Team Average' && stat.value === 0 ? (
-                    <div className="text-4xl font-bold">Pre-Season</div>
+                  {loading ? (
+                    <div className="text-2xl font-bold animate-pulse">Loading...</div>
+                  ) : stat.value === 0 && (stat.label === 'Team Average' || stat.label === 'Total Games') ? (
+                    <div className="text-3xl font-bold">Pre-Season</div>
                   ) : stat.label === 'Season Wins' && stat.value === 0 ? (
                     <div className="text-4xl font-bold">TBD</div>
                   ) : stat.label === 'Championships' && stat.value === 0 ? (

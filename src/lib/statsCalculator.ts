@@ -49,7 +49,9 @@ export async function calculatePlayerStats(playerId: string): Promise<PlayerGame
     }
 
     const playerData = playerSnap.data();
-    const playerName = `${playerData.firstName || ''} ${playerData.lastName || ''}`.trim();
+    const playerName = playerData.name ||
+                       `${playerData.firstName || ''} ${playerData.lastName || ''}`.trim() ||
+                       'Unknown Player';
 
     // Fetch all games for this player
     const gamesRef = collection(statsDb, 'games');
