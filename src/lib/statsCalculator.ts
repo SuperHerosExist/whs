@@ -54,10 +54,11 @@ export async function calculatePlayerStats(playerId: string): Promise<PlayerGame
                        'Unknown Player';
 
     // Fetch all games for this player
+    // Note: Games in Stats app use playerId field (not players array)
     const gamesRef = collection(statsDb, 'games');
     const gamesQuery = query(
       gamesRef,
-      where('players', 'array-contains', playerId)
+      where('playerId', '==', playerId)
     );
 
     const gamesSnapshot = await getDocs(gamesQuery);
@@ -80,6 +81,7 @@ export async function calculatePlayerStats(playerId: string): Promise<PlayerGame
     }
 
     // Extract all scores for this player from all games
+    // In Stats app, each game has playerId and totalScore fields
     const allScores: number[] = [];
     let totalStrikes = 0;
     let totalSpares = 0;
@@ -88,22 +90,17 @@ export async function calculatePlayerStats(playerId: string): Promise<PlayerGame
     gamesSnapshot.forEach((gameDoc) => {
       const gameData = gameDoc.data();
 
-      // Find this player's score in the game
-      const playerIndex = gameData.players.indexOf(playerId);
-      if (playerIndex !== -1 && gameData.scores && gameData.scores[playerIndex] != null) {
-        const score = gameData.scores[playerIndex];
-        if (typeof score === 'number' && score > 0) {
-          allScores.push(score);
-        }
-
-        // Sum up frame-by-frame stats if available
-        if (gameData.frameScores && gameData.frameScores[playerIndex]) {
-          const frameData = gameData.frameScores[playerIndex];
-          totalStrikes += frameData.strikes || 0;
-          totalSpares += frameData.spares || 0;
-          totalSplits += frameData.splits || 0;
-        }
+      // Each game document has totalScore directly
+      if (gameData.totalScore != null && typeof gameData.totalScore === 'number' && gameData.totalScore > 0) {
+        allScores.push(gameData.totalScore);
       }
+
+      // Sum up frame-by-frame stats if available
+      // Note: Frame details are in separate 'frames' collection in Stats app
+      // We'll calculate basic stats here, detailed frame stats would require joining frames
+      if (gameData.strikeCount) totalStrikes += gameData.strikeCount;
+      if (gameData.spareCount) totalSpares += gameData.spareCount;
+      if (gameData.splitCount) totalSplits += gameData.splitCount;
     });
 
     if (allScores.length === 0) {
