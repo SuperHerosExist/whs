@@ -237,28 +237,21 @@ export const Home: React.FC = () => {
               <div className="absolute top-1/4 right-1/4 text-8xl">⚡</div>
             </div>
 
-            <div className="relative z-10">
-              <div className="inline-block bg-yellow-500 text-willard-black px-5 py-2 rounded-full text-xs font-black uppercase tracking-wide mb-6">
-                NEW MEMBERS WELCOME
+            <div className="relative z-10 w-full">
+              <div className="flex justify-center mb-6 w-full">
+                <div className="inline-block bg-yellow-500 text-willard-black px-5 py-2 rounded-full text-xs font-black uppercase tracking-wide">
+                  NEW MEMBERS WELCOME
+                </div>
               </div>
-              <h3 className="text-3xl md:text-4xl font-black mb-6">
+              <h3 className="text-3xl md:text-4xl font-black mb-6 text-center w-full">
                 Ready to Join<br />The Tigers?
               </h3>
-              <p className="text-xl md:text-2xl mb-3 font-bold max-w-3xl mx-auto">
+              <p className="text-xl md:text-2xl mb-3 font-bold max-w-3xl mx-auto text-center w-full">
                 {practiceSchedule.getScheduleText()}
               </p>
-              <p className="text-sm md:text-base mb-8 opacity-75 max-w-2xl mx-auto">
+              <p className="text-sm md:text-base mb-8 opacity-75 max-w-2xl mx-auto text-center w-full">
                 {practiceSchedule.getDetailsText()}
               </p>
-              <div className="flex justify-center">
-                <button
-                  onClick={() => window.location.href = '/contact'}
-                  className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-willard-black px-10 py-4 rounded-full font-black text-lg hover:from-yellow-400 hover:to-yellow-500 hover:scale-105 transition-all inline-flex items-center gap-3 shadow-xl"
-                >
-                  Join the Team
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-              </div>
             </div>
           </div>
         </div>
