@@ -148,7 +148,7 @@ export const CoachDashboard: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white">
       {/* Header */}
       <section className="bg-tiger-primary-black text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl md:text-4xl font-display font-black mb-2">
             Coach Dashboard
           </h1>
@@ -158,7 +158,7 @@ export const CoachDashboard: React.FC = () => {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Tabs */}
         <div className="flex flex-wrap gap-2 mb-8">
           <button

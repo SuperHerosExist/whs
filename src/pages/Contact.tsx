@@ -69,7 +69,7 @@ export const Contact: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white">
       {/* Page Header */}
       <section className="bg-tiger-primary-black text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl font-display font-black mb-4">
             Contact Us
           </h1>
@@ -79,7 +79,7 @@ export const Contact: React.FC = () => {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid md:grid-cols-2 gap-12">
           {/* Contact Information */}
           <div>

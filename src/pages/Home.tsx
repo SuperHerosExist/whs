@@ -117,7 +117,7 @@ export const Home: React.FC = () => {
 
       {/* 📊 STATS GRID - LIVE STATS */}
       <section className="w-full bg-white py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
             <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
             <h3 className="text-2xl md:text-3xl font-black text-willard-grey-900 tracking-tight">LIVE STATS</h3>
@@ -160,7 +160,7 @@ export const Home: React.FC = () => {
 
       {/* 🏆 RECENT HIGHLIGHTS - NO TAGLINE */}
       <section className="w-full bg-gradient-to-br from-willard-grey-50 via-willard-white to-willard-grey-100 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-black text-willard-grey-900">
               Recent Highlights
@@ -212,7 +212,7 @@ export const Home: React.FC = () => {
 
       {/* ⚡ CALL TO ACTION */}
       <section className="w-full bg-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-willard-black via-willard-grey-900 to-willard-grey-800 rounded-2xl p-12 md:p-16 text-center text-white shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-1/2 left-1/4 text-8xl">🎳</div>

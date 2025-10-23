@@ -143,7 +143,7 @@ export const Stats: React.FC = () => {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
         <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black opacity-90" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="inline-block bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-4 py-1 rounded-full font-bold text-xs uppercase tracking-widest mb-4">
             2024-2025 Season
           </div>
@@ -157,7 +157,7 @@ export const Stats: React.FC = () => {
       </section>
 
       {/* Team Stats Overview */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12">
+      <section className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 -mt-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           <StatCard
             icon={Target}
@@ -188,7 +188,7 @@ export const Stats: React.FC = () => {
 
       {/* 🔥 HYPE ZONE - Achievements & Records */}
       {teamStats.totalGames > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <section className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="flex items-center gap-3 mb-4">
             <Flame className="w-8 h-8 text-orange-500" />
             <h2 className="text-3xl font-display font-black text-tiger-primary-black">
@@ -369,7 +369,7 @@ export const Stats: React.FC = () => {
 
       {/* AI-Powered Insights */}
       {teamStats.totalGames > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <section className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="flex items-center gap-3 mb-8">
             <Sparkles className="w-8 h-8 text-purple-600" />
             <h2 className="text-3xl font-display font-black text-tiger-primary-black">
@@ -425,7 +425,7 @@ export const Stats: React.FC = () => {
       )}
 
       {/* Top Performers */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <section className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-3xl font-display font-black text-tiger-primary-black mb-8">
           Top Performers
         </h2>
@@ -526,7 +526,7 @@ export const Stats: React.FC = () => {
       </section>
 
       {/* Integration with Stats App */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <section className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="bg-gradient-to-r from-willard-black via-willard-grey-900 to-willard-grey-800 rounded-2xl p-8 md:p-12 text-white text-center shadow-xl relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-1/2 left-1/4 text-8xl">📊</div>

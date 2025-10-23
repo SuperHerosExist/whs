@@ -33,7 +33,7 @@ export const CoachSettings: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-willard-grey-50 via-willard-white to-willard-grey-100">
       {/* Header */}
       <section className="bg-gradient-to-br from-willard-black via-willard-grey-900 to-willard-grey-800 text-white py-16">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-6">
           <div className="flex items-center gap-6">
             <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
               <Settings className="w-12 h-12" />

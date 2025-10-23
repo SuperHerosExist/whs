@@ -62,7 +62,7 @@ export const Schedule: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-tiger-neutral-50 to-white">
       {/* Page Header */}
       <section className="bg-tiger-primary-black text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl font-display font-black mb-4">
             Schedule
           </h1>
@@ -73,7 +73,7 @@ export const Schedule: React.FC = () => {
       </section>
 
       {/* Filter Tabs */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <section className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-wrap gap-2 justify-center">
           {[
             { value: 'upcoming', label: 'Upcoming' },
@@ -96,7 +96,7 @@ export const Schedule: React.FC = () => {
       </section>
 
       {/* Events List */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <section className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         {filter === 'all' || filter === 'upcoming' ? (
           <div className="mb-12">
             <h2 className="text-2xl font-display font-black text-tiger-primary-black mb-6">

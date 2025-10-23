@@ -156,7 +156,7 @@ export const Roster: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-willard-grey-50 via-willard-white to-willard-grey-100">
       {/* 🏆 BOLD HEADER */}
       <section className="bg-gradient-to-br from-willard-black via-willard-grey-900 to-willard-grey-800 text-white py-20">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-6">
           <div className="flex items-center gap-6">
             <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
               <img
@@ -173,7 +173,7 @@ export const Roster: React.FC = () => {
       </section>
 
       {/* 👥 PLAYERS SECTION */}
-      <section className="max-w-7xl mx-auto px-6 py-16">
+      <section className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-6 py-16">
         {players.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">🎳</div>
