@@ -133,7 +133,7 @@ export const branding = {
 
   // Social media
   social: {
-    facebook: '',
+    facebook: 'https://www.facebook.com/groups/702783571642868',
     twitter: '',
     instagram: '',
   },
@@ -141,9 +141,9 @@ export const branding = {
   // Contact information
   contact: {
     coach: {
-      name: '',
-      email: '',
-      phone: '',
+      name: 'David Collins',
+      email: 'willard.bowlingcoach@gmail.com',
+      phone: '417-987-3551',
     },
   },
 } as const;

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { statsDb, STATS_TEAM_ID } from '@/lib/statsFirebase';
 import { getAllPlayerStats, type PlayerGameStats } from '@/lib/statsCalculator';
@@ -9,6 +10,7 @@ type SortField = 'name' | 'average' | 'highGame' | 'highSeries';
 type SortDirection = 'asc' | 'desc';
 
 export const Roster: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
@@ -93,6 +95,19 @@ export const Roster: React.FC = () => {
     fetchPlayers();
   }, []);
 
+  // Handle player parameter from URL (for ticker clicks)
+  useEffect(() => {
+    const playerIdFromUrl = searchParams.get('player');
+    if (playerIdFromUrl && players.length > 0 && !selectedPlayer) {
+      const player = players.find(p => p.id === playerIdFromUrl);
+      if (player) {
+        setSelectedPlayer(player);
+        // Clear the URL parameter after opening modal
+        setSearchParams({});
+      }
+    }
+  }, [searchParams, players, selectedPlayer, setSearchParams]);
+
   // Sorting function
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -158,11 +173,11 @@ export const Roster: React.FC = () => {
       <section className="bg-gradient-to-br from-willard-black via-willard-grey-900 to-willard-grey-800 text-white py-20">
         <div className="w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-6">
           <div className="flex items-center gap-6">
-            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3xl p-6 shadow-tiger-2xl">
+            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-full p-4 shadow-tiger-2xl overflow-hidden">
               <img
                 src="/assets/logos/tiger-logo.jpg"
                 alt="Willard Tigers"
-                className="w-16 h-16 object-contain"
+                className="w-20 h-20 object-cover"
               />
             </div>
             <div>
@@ -182,7 +197,7 @@ export const Roster: React.FC = () => {
           </div>
         ) : (
           /* TABLE VIEW */
-          <div className="bg-white rounded-2xl shadow-tiger-lg overflow-hidden">
+          <div className="bg-white shadow-tiger-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gradient-to-r from-willard-black to-willard-grey-900 text-white">
