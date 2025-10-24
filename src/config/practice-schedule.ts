@@ -7,12 +7,11 @@
 
 export const practiceSchedule = {
   // Practice days and time
-  days: ['Monday', 'Wednesday'],
+  days: ['Monday', 'Thursday'],
   time: '3:30 PM',
 
   // Additional info
   skillLevels: 'All skill levels welcome',
-  equipment: 'Equipment provided',
   experience: 'No experience needed',
 
   // Location (optional)
@@ -25,7 +24,7 @@ export const practiceSchedule = {
   },
 
   getDetailsText(): string {
-    return `${this.skillLevels} • ${this.equipment} • ${this.experience}`;
+    return `${this.skillLevels} • ${this.experience}`;
   }
 };
 

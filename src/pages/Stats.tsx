@@ -145,7 +145,7 @@ export const Stats: React.FC = () => {
 
         <div className="relative w-full max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="inline-block bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-4 py-1 rounded-full font-bold text-xs uppercase tracking-widest mb-4">
-            2024-2025 Season
+            2025-2026 Season
           </div>
           <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-wider mb-4">
             TEAM STATISTICS

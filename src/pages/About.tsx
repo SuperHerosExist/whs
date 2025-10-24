@@ -106,7 +106,7 @@ export const About: React.FC = () => {
               <div className="grid grid-cols-3 gap-6 mt-8 pt-8 border-t border-white border-opacity-20">
                 <div className="text-center">
                   <div className="text-4xl font-display font-black text-tiger-tiger-gold mb-2">
-                    3
+                    2
                   </div>
                   <div className="text-sm font-semibold text-tiger-neutral-300">
                     Championships

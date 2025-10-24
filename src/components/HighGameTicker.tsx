@@ -25,7 +25,6 @@ export const HighGameTicker: React.FC = () => {
         const items: TickerItem[] = [];
 
         playerStats.forEach(stat => {
-          // High Games (200+)
           if (stat.highGame >= 200) {
             items.push({
               id: `highgame-${stat.playerId}`,
@@ -37,8 +36,6 @@ export const HighGameTicker: React.FC = () => {
               message: `rolled a ${stat.highGame}!`
             });
           }
-
-          // High Series (500+)
           if (stat.highSeries >= 500) {
             items.push({
               id: `highseries-${stat.playerId}`,
@@ -50,8 +47,6 @@ export const HighGameTicker: React.FC = () => {
               message: `series of ${stat.highSeries}!`
             });
           }
-
-          // USBC Gold Achievement (100+ over average)
           if (stat.gamesOver100 > 0) {
             items.push({
               id: `gold-${stat.playerId}`,
@@ -63,8 +58,6 @@ export const HighGameTicker: React.FC = () => {
               message: `earned ${stat.gamesOver100} Gold medal${stat.gamesOver100 > 1 ? 's' : ''}!`
             });
           }
-
-          // USBC Silver Achievement (50+ over average)
           if (stat.gamesOver50 > 0) {
             items.push({
               id: `silver-${stat.playerId}`,
@@ -76,8 +69,6 @@ export const HighGameTicker: React.FC = () => {
               message: `earned ${stat.gamesOver50} Silver medal${stat.gamesOver50 > 1 ? 's' : ''}!`
             });
           }
-
-          // USBC Bronze Achievement (25+ over average)
           if (stat.gamesOver25 > 0 && stat.gamesOver25 <= 10) {
             items.push({
               id: `bronze-${stat.playerId}`,
@@ -89,8 +80,6 @@ export const HighGameTicker: React.FC = () => {
               message: `earned ${stat.gamesOver25} Bronze medal${stat.gamesOver25 > 1 ? 's' : ''}!`
             });
           }
-
-          // Hot Streak (5+ games above average)
           if (stat.longestStreak >= 5) {
             items.push({
               id: `streak-${stat.playerId}`,
@@ -102,8 +91,6 @@ export const HighGameTicker: React.FC = () => {
               message: `is on fire with a ${stat.longestStreak}-game hot streak!`
             });
           }
-
-          // Pins Over Average highlights
           if (stat.gamesOver25 > 5) {
             items.push({
               id: `overavg-${stat.playerId}`,
@@ -117,13 +104,11 @@ export const HighGameTicker: React.FC = () => {
           }
         });
 
-        // Shuffle items for variety
         const shuffled = items.sort(() => Math.random() - 0.5);
-        setTickerItems(shuffled.slice(0, 20)); // Limit to 20 items
-        console.log(`🎯 Loaded ${shuffled.length} ticker items`);
+        setTickerItems(shuffled.slice(0, 20)); // Start with 20 random items
+        setLoading(false);
       } catch (error) {
         console.error('❌ Error fetching ticker data:', error);
-      } finally {
         setLoading(false);
       }
     };
@@ -131,9 +116,16 @@ export const HighGameTicker: React.FC = () => {
     fetchTickerData();
   }, []);
 
-  if (loading || tickerItems.length === 0) {
-    return null;
-  }
+  // 🔁 Re-shuffle every 10s to keep variety
+  useEffect(() => {
+    if (!tickerItems.length) return;
+    const interval = setInterval(() => {
+      setTickerItems(prev => [...prev].sort(() => Math.random() - 0.5).slice(0, 20));
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [tickerItems.length]);
+
+  if (loading || tickerItems.length === 0) return null;
 
   const handleTickerClick = (playerId: string) => {
     navigate(`/roster?player=${playerId}`);
@@ -141,24 +133,40 @@ export const HighGameTicker: React.FC = () => {
 
   return (
     <div className="bg-black text-white py-3 md:py-4 overflow-hidden shadow-lg border-t-2 border-yellow-500 relative">
+      <style>{`
+        @keyframes scroll-left {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-100%); }
+        }
+
+        /* Default (desktop) speed */
+        .ticker-scroll {
+          animation: scroll-left 60s linear infinite;
+        }
+
+        /* Tablets: medium speed */
+        @media (max-width: 1024px) {
+          .ticker-scroll {
+            animation-duration: 40s;
+          }
+        }
+
+        /* Mobile: fastest */
+        @media (max-width: 640px) {
+          .ticker-scroll {
+            animation-duration: 25s;
+          }
+        }
+
+        .ticker-scroll:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+
       <div className="flex items-center gap-4">
         {/* Continuous scrolling ticker */}
         <div className="flex-1 overflow-hidden relative">
-          <style>{`
-            @keyframes scroll-left {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-            .ticker-scroll {
-              animation: scroll-left 30s linear infinite;
-            }
-            .ticker-scroll:hover {
-              animation-play-state: paused;
-            }
-          `}</style>
-
           <div className="ticker-scroll flex items-center gap-8 whitespace-nowrap pl-4">
-            {/* Duplicate the items for seamless loop */}
             {[...tickerItems, ...tickerItems].map((item, idx) => (
               <div
                 key={`${item.id}-${idx}`}
@@ -167,8 +175,8 @@ export const HighGameTicker: React.FC = () => {
               >
                 <span className="text-2xl">{item.icon}</span>
                 <span>
-                  <span className="text-yellow-500">{item.playerName}</span>
-                  {' '}{item.message}
+                  <span className="text-yellow-500">{item.playerName}</span>{' '}
+                  {item.message}
                 </span>
                 <span className="text-yellow-500 mx-2">•</span>
               </div>
@@ -179,7 +187,7 @@ export const HighGameTicker: React.FC = () => {
         {/* ESPN-style ticker header - Fixed on right */}
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 bg-black pr-4 pl-6 py-1 z-10">
           <Zap className="w-5 h-5 text-yellow-500 animate-pulse" />
-          <div className="bg-yellow-500 text-black px-3 md:px-4 py-1 md:py-1.5 rounded font-black text-xs md:text-sm uppercase tracking-wider shadow-lg">
+          <div className="hidden md:block bg-yellow-500 text-black px-3 md:px-4 py-1 md:py-1.5 rounded font-black text-xs md:text-sm uppercase tracking-wider shadow-lg">
             Live Highlights
           </div>
         </div>

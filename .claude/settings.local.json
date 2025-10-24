@@ -35,7 +35,8 @@
       "Bash(findstr:*)",
       "Bash(node scripts/update-home-stats.cjs:*)",
       "Bash(node scripts/update-roster-stats.cjs:*)",
-      "Bash(node scripts/update-stats-page.cjs:*)"
+      "Bash(node scripts/update-stats-page.cjs:*)",
+      "Bash(firebase hosting:channel:list:*)"
     ],
     "deny": [],
     "ask": []

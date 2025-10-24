@@ -67,7 +67,7 @@ export const Schedule: React.FC = () => {
             Schedule
           </h1>
           <p className="text-xl text-tiger-neutral-300">
-            2024-2025 Season
+            2025-2026 Season
           </p>
         </div>
       </section>
@@ -111,7 +111,7 @@ export const Schedule: React.FC = () => {
             ) : (
               <div className="text-center py-12 bg-white rounded-xl shadow-tiger">
                 <Calendar className="w-12 h-12 text-tiger-neutral-400 mx-auto mb-4" />
-                <p className="text-tiger-neutral-600">No upcoming events scheduled</p>
+                <p className="text-tiger-neutral-600">Events are being Scheduled...</p>
               </div>
             )}
           </div>
