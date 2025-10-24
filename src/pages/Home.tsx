@@ -4,7 +4,6 @@ import {
   Users,
   Target,
   TrendingUp,
-  ChevronRight,
   Zap,
   Star,
   Calendar,
