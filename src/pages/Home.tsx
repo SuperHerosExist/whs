@@ -12,6 +12,19 @@ import { calculateTeamStats } from "@/lib/statsCalculator";
 import { practiceSchedule } from "@/config/practice-schedule";
 import { HighGameTicker } from "@/components/HighGameTicker";
 
+const CACHE_KEY = 'whs_home_stats_cache';
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+
+interface CachedStats {
+  data: {
+    teamAverage: number;
+    totalMembers: number;
+    totalGames: number;
+    highIndividualGame: number;
+  };
+  timestamp: number;
+}
+
 export const Home: React.FC = () => {
   const [liveStats, setLiveStats] = useState({
     teamAverage: 0,
@@ -25,13 +38,47 @@ export const Home: React.FC = () => {
     const fetchLiveStats = async () => {
       try {
         setLoading(true);
+
+        // Check cache first
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        if (cachedData) {
+          try {
+            const cached: CachedStats = JSON.parse(cachedData);
+            const now = Date.now();
+
+            // If cache is still valid, use it
+            if (now - cached.timestamp < CACHE_DURATION) {
+              console.log('📦 Using cached team stats');
+              setLiveStats(cached.data);
+              setLoading(false);
+              return;
+            } else {
+              console.log('🔄 Cache expired, fetching fresh stats');
+            }
+          } catch (e) {
+            console.warn('⚠️  Invalid cache data, fetching fresh stats');
+          }
+        }
+
+        // Fetch fresh data
+        console.log('📊 Fetching team stats from database...');
         const teamStats = await calculateTeamStats();
-        setLiveStats({
+        const statsData = {
           teamAverage: teamStats.teamAverage,
           totalMembers: teamStats.totalPlayers,
           totalGames: teamStats.totalGames,
           highIndividualGame: teamStats.highIndividualGame,
-        });
+        };
+
+        setLiveStats(statsData);
+
+        // Cache the result
+        const cacheData: CachedStats = {
+          data: statsData,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+        console.log('✅ Team stats cached successfully');
       } catch (error) {
         console.error("❌ Error fetching home stats:", error);
       } finally {
