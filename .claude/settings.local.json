@@ -36,7 +36,8 @@
       "Bash(node scripts/update-home-stats.cjs:*)",
       "Bash(node scripts/update-roster-stats.cjs:*)",
       "Bash(node scripts/update-stats-page.cjs:*)",
-      "Bash(firebase hosting:channel:list:*)"
+      "Bash(firebase hosting:channel:list:*)",
+      "Read(//c/Users/Dave/Projects/Stats/**)"
     ],
     "deny": [],
     "ask": []
